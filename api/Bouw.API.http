@@ -1,0 +1,6 @@
+@Bouw.API_HostAddress = http://localhost:5036
+
+GET {{Bouw.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
