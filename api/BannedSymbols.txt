@@ -1,0 +1,23 @@
+# Banned APIs for this project. Format documented at:
+# https://github.com/dotnet/roslyn-analyzers/blob/main/src/Microsoft.CodeAnalysis.BannedApiAnalyzers/BannedApiAnalyzers.Help.md
+#
+# Each line: <symbol-id> ; <message shown when used>
+# Symbol IDs come from `DocumentationCommentId` (e.g. `M:System.Threading.Thread.Sleep(System.Int32)`).
+
+# --- Time ---------------------------------------------------------------------
+P:System.DateTime.Now;Use TimeProvider (injected) instead of DateTime.Now so time can be controlled in tests.
+P:System.DateTime.UtcNow;Use TimeProvider (injected) instead of DateTime.UtcNow so time can be controlled in tests.
+P:System.DateTime.Today;Use TimeProvider (injected) instead of DateTime.Today so time can be controlled in tests.
+P:System.DateTimeOffset.Now;Use TimeProvider (injected) instead of DateTimeOffset.Now.
+P:System.DateTimeOffset.UtcNow;Use TimeProvider (injected) instead of DateTimeOffset.UtcNow.
+
+# --- Threading ----------------------------------------------------------------
+M:System.Threading.Thread.Sleep(System.Int32);Use Task.Delay with a CancellationToken instead of Thread.Sleep.
+M:System.Threading.Thread.Sleep(System.TimeSpan);Use Task.Delay with a CancellationToken instead of Thread.Sleep.
+
+# --- Async / sync-over-async --------------------------------------------------
+P:System.Threading.Tasks.Task`1.Result;Awaiting the Task is required; .Result blocks and can deadlock.
+M:System.Threading.Tasks.Task.Wait;Awaiting the Task is required; .Wait() blocks and can deadlock.
+
+# --- Random -------------------------------------------------------------------
+M:System.Random.#ctor;Use Random.Shared for non-security randomness or RandomNumberGenerator for security-sensitive use.

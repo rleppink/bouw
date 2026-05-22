@@ -1,11 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "hT4UuDM4e0I=",
+  "dgSpecHash": "jnnuidvSIlQ=",
   "success": true,
-  "projectFilePath": "/Users/rleppink/Projects/bouw/Bouw.API/Bouw.API.csproj",
+  "projectFilePath": "/Users/rleppink/Projects/bouw/api/Bouw.API.csproj",
   "expectedPackageFiles": [
+    "/Users/rleppink/.nuget/packages/meziantou.analyzer/3.0.85/meziantou.analyzer.3.0.85.nupkg.sha512",
     "/Users/rleppink/.nuget/packages/microsoft.aspnetcore.openapi/10.0.1/microsoft.aspnetcore.openapi.10.0.1.nupkg.sha512",
-    "/Users/rleppink/.nuget/packages/microsoft.openapi/2.0.0/microsoft.openapi.2.0.0.nupkg.sha512"
+    "/Users/rleppink/.nuget/packages/microsoft.codeanalysis.bannedapianalyzers/4.14.0/microsoft.codeanalysis.bannedapianalyzers.4.14.0.nupkg.sha512",
+    "/Users/rleppink/.nuget/packages/microsoft.openapi/2.0.0/microsoft.openapi.2.0.0.nupkg.sha512",
+    "/Users/rleppink/.nuget/packages/microsoft.visualstudio.threading.analyzers/17.14.15/microsoft.visualstudio.threading.analyzers.17.14.15.nupkg.sha512"
   ],
   "logs": []
 }

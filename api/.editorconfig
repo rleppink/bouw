@@ -1,0 +1,83 @@
+root = true
+
+# =============================================================================
+# Defaults for every file
+# =============================================================================
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{json,yml,yaml,xml,csproj,props,targets,config}]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+
+# =============================================================================
+# C# source files
+# =============================================================================
+[*.cs]
+
+# ---- `this.` qualification (required) --------------------------------------
+# Member access must be qualified with `this.`; pairs with the no-underscore
+# private-field convention below (`this.field` instead of `_field`).
+dotnet_style_qualification_for_field = true:warning
+dotnet_style_qualification_for_property = true:warning
+dotnet_style_qualification_for_method = true:warning
+dotnet_style_qualification_for_event = true:warning
+
+# ---- Language / style preferences ------------------------------------------
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+csharp_using_directive_placement = outside_namespace:warning
+csharp_style_namespace_declarations = file_scoped:warning
+csharp_prefer_simple_using_statement = true:suggestion
+csharp_style_prefer_top_level_statements = true:silent
+csharp_style_var_for_built_in_types = false:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = false:suggestion
+csharp_style_expression_bodied_methods = when_on_single_line:suggestion
+csharp_style_expression_bodied_properties = when_on_single_line:suggestion
+csharp_style_expression_bodied_accessors = when_on_single_line:suggestion
+csharp_style_pattern_matching_over_is_with_cast_check = true:warning
+csharp_style_pattern_matching_over_as_with_null_check = true:warning
+
+# ---- Naming conventions ----------------------------------------------------
+# Private fields are camelCase with NO leading underscore. The camel_case style
+# declares no required_prefix, so `_foo` fails the rule (IDE1006).
+dotnet_naming_rule.private_fields_camel_case.symbols = private_fields
+dotnet_naming_rule.private_fields_camel_case.style = camel_case
+dotnet_naming_rule.private_fields_camel_case.severity = warning
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+dotnet_naming_style.camel_case.capitalization = camel_case
+dotnet_naming_style.camel_case.required_prefix =
+
+dotnet_naming_rule.constants_pascal_case.symbols = constants
+dotnet_naming_rule.constants_pascal_case.style = pascal_case
+dotnet_naming_rule.constants_pascal_case.severity = warning
+dotnet_naming_symbols.constants.applicable_kinds = field
+dotnet_naming_symbols.constants.required_modifiers = const
+dotnet_naming_style.pascal_case.capitalization = pascal_case
+
+# =============================================================================
+# SDK analyzer rule overrides
+# =============================================================================
+
+# ASP.NET Core uses an auto-generated `public` Program class for testability
+dotnet_diagnostic.CA1515.severity = none  # consider making public types internal
+
+# =============================================================================
+# Repo-local analyzer project
+# =============================================================================
+[analyzers/**/*.cs]
+# Analyzer release tracking is meant for analyzers shipped as NuGet packages;
+# this one is repo-internal, so the Shipped/Unshipped manifests are not useful.
+dotnet_diagnostic.RS2008.severity = none
+# Roslyn guarantees the context passed to analyzer entry points is non-null;
+# a defensive null check would be dead code.
+dotnet_diagnostic.CA1062.severity = none

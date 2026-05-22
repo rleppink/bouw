@@ -1,18 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/rleppink/Projects/bouw/Bouw.API/Bouw.API.csproj": {}
+    "/Users/rleppink/Projects/bouw/api/Bouw.API.csproj": {}
   },
   "projects": {
-    "/Users/rleppink/Projects/bouw/Bouw.API/Bouw.API.csproj": {
+    "/Users/rleppink/Projects/bouw/api/Bouw.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/rleppink/Projects/bouw/Bouw.API/Bouw.API.csproj",
+        "projectUniqueName": "/Users/rleppink/Projects/bouw/api/Bouw.API.csproj",
         "projectName": "Bouw.API",
-        "projectPath": "/Users/rleppink/Projects/bouw/Bouw.API/Bouw.API.csproj",
+        "projectPath": "/Users/rleppink/Projects/bouw/api/Bouw.API.csproj",
         "packagesPath": "/Users/rleppink/.nuget/packages/",
-        "outputPath": "/Users/rleppink/Projects/bouw/Bouw.API/obj/",
+        "outputPath": "/Users/rleppink/Projects/bouw/api/obj/",
         "projectStyle": "PackageReference",
+        "centralPackageVersionsManagementEnabled": true,
+        "CentralPackageTransitivePinningEnabled": true,
         "configFilePaths": [
           "/Users/rleppink/.nuget/NuGet/NuGet.Config"
         ],
@@ -29,9 +31,13 @@
           }
         },
         "warningProperties": {
+          "allWarningsAsErrors": true,
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreLockProperties": {
+          "restorePackagesWithLockFile": "true"
         },
         "restoreAuditProperties": {
           "enableAudit": "true",
@@ -44,10 +50,36 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "dependencies": {
+            "Meziantou.Analyzer": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.0.85, )",
+              "versionCentrallyManaged": true
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
-              "version": "[10.0.1, )"
+              "version": "[10.0.1, )",
+              "versionCentrallyManaged": true
+            },
+            "Microsoft.CodeAnalysis.BannedApiAnalyzers": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[4.14.0, )",
+              "versionCentrallyManaged": true
+            },
+            "Microsoft.VisualStudio.Threading.Analyzers": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[17.14.15, )",
+              "versionCentrallyManaged": true
             }
+          },
+          "centralPackageVersions": {
+            "Meziantou.Analyzer": "3.0.85",
+            "Microsoft.AspNetCore.OpenApi": "10.0.1",
+            "Microsoft.CodeAnalysis.BannedApiAnalyzers": "4.14.0",
+            "Microsoft.CodeAnalysis.CSharp": "4.14.0",
+            "Microsoft.VisualStudio.Threading.Analyzers": "17.14.15"
           },
           "imports": [
             "net461",
