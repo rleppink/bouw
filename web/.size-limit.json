@@ -1,0 +1,20 @@
+[
+  {
+    "name": "entry (index)",
+    "path": "dist/assets/index-*.js",
+    "gzip": true,
+    "limit": "145 kB"
+  },
+  {
+    "name": "route chunk (workflows)",
+    "path": "dist/assets/workflows-*.js",
+    "gzip": true,
+    "limit": "85 kB"
+  },
+  {
+    "name": "styles",
+    "path": "dist/assets/*.css",
+    "gzip": true,
+    "limit": "12 kB"
+  }
+]
