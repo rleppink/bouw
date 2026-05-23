@@ -1,3 +1,5 @@
+using Bouw.API.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
@@ -10,5 +12,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.MapFeatures();
 
 await app.RunAsync().ConfigureAwait(false);
