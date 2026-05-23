@@ -1,0 +1,111 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/rleppink/Projects/bouw/analyzers/FileLineLimit/FileLineLimit.csproj": {}
+  },
+  "projects": {
+    "/Users/rleppink/Projects/bouw/analyzers/FileLineLimit/FileLineLimit.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/rleppink/Projects/bouw/analyzers/FileLineLimit/FileLineLimit.csproj",
+        "projectName": "FileLineLimit",
+        "projectPath": "/Users/rleppink/Projects/bouw/analyzers/FileLineLimit/FileLineLimit.csproj",
+        "packagesPath": "/Users/rleppink/.nuget/packages/",
+        "outputPath": "/Users/rleppink/Projects/bouw/analyzers/FileLineLimit/obj/",
+        "projectStyle": "PackageReference",
+        "centralPackageVersionsManagementEnabled": true,
+        "CentralPackageTransitivePinningEnabled": true,
+        "configFilePaths": [
+          "/Users/rleppink/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.0": {
+            "targetAlias": "netstandard2.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "allWarningsAsErrors": true,
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreLockProperties": {
+          "restorePackagesWithLockFile": "true"
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "all"
+        },
+        "SdkAnalysisLevel": "10.0.100"
+      },
+      "frameworks": {
+        "netstandard2.0": {
+          "targetAlias": "netstandard2.0",
+          "dependencies": {
+            "Meziantou.Analyzer": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.0.85, )",
+              "versionCentrallyManaged": true
+            },
+            "Microsoft.CodeAnalysis.BannedApiAnalyzers": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[4.14.0, )",
+              "versionCentrallyManaged": true
+            },
+            "Microsoft.CodeAnalysis.CSharp": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[4.14.0, )",
+              "versionCentrallyManaged": true
+            },
+            "Microsoft.VisualStudio.Threading.Analyzers": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[17.14.15, )",
+              "versionCentrallyManaged": true
+            },
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            }
+          },
+          "centralPackageVersions": {
+            "coverlet.collector": "6.0.4",
+            "Meziantou.Analyzer": "3.0.85",
+            "Microsoft.AspNetCore.OpenApi": "10.0.1",
+            "Microsoft.CodeAnalysis.BannedApiAnalyzers": "4.14.0",
+            "Microsoft.CodeAnalysis.CSharp": "4.14.0",
+            "Microsoft.NET.Test.Sdk": "17.14.1",
+            "Microsoft.VisualStudio.Threading.Analyzers": "17.14.15",
+            "xunit": "2.9.3",
+            "xunit.runner.visualstudio": "3.1.4"
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.101/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

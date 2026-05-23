@@ -339,11 +339,15 @@
           }
         },
         "centralPackageVersions": {
+          "coverlet.collector": "6.0.4",
           "Meziantou.Analyzer": "3.0.85",
           "Microsoft.AspNetCore.OpenApi": "10.0.1",
           "Microsoft.CodeAnalysis.BannedApiAnalyzers": "4.14.0",
           "Microsoft.CodeAnalysis.CSharp": "4.14.0",
-          "Microsoft.VisualStudio.Threading.Analyzers": "17.14.15"
+          "Microsoft.NET.Test.Sdk": "17.14.1",
+          "Microsoft.VisualStudio.Threading.Analyzers": "17.14.15",
+          "xunit": "2.9.3",
+          "xunit.runner.visualstudio": "3.1.4"
         },
         "imports": [
           "net461",
