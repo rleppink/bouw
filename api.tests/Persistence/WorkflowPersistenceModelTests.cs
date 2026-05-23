@@ -68,14 +68,27 @@ public sealed class WorkflowPersistenceModelTests
     {
         using var context = CreateContext();
 
-        Assert.Equal("active", ConvertProperty(context, typeof(Workflow), "Status", WorkflowStatus.Active));
+        Assert.Equal(
+            "active",
+            ConvertProperty(context, typeof(Workflow), "Status", WorkflowStatus.Active)
+        );
         Assert.Equal(
             "ask_user_input",
-            ConvertProperty(context, typeof(WorkflowAction), "Type", WorkflowActionType.AskUserInput)
+            ConvertProperty(
+                context,
+                typeof(WorkflowAction),
+                "Type",
+                WorkflowActionType.AskUserInput
+            )
         );
         Assert.Equal(
             "waiting_for_user",
-            ConvertProperty(context, typeof(WorkflowSession), "Status", SessionStatus.WaitingForUser)
+            ConvertProperty(
+                context,
+                typeof(WorkflowSession),
+                "Status",
+                SessionStatus.WaitingForUser
+            )
         );
     }
 
@@ -132,11 +145,15 @@ public sealed class WorkflowPersistenceModelTests
         return new BouwDbContext(options);
     }
 
-    private static object? ConvertProperty(BouwDbContext context, Type entityType, string propertyName, object value) =>
+    private static object? ConvertProperty(
+        BouwDbContext context,
+        Type entityType,
+        string propertyName,
+        object value
+    ) =>
         context
             .Model.FindEntityType(entityType)
             ?.FindProperty(propertyName)
             ?.GetTypeMapping()
-            .Converter
-            ?.ConvertToProvider(value);
+            .Converter?.ConvertToProvider(value);
 }

@@ -1,7 +1,5 @@
 using ArchUnitNET.xUnit;
-
 using Bouw.API.Infrastructure;
-
 using static ArchUnitNET.Fluent.ArchRuleDefinition;
 
 namespace Bouw.API.Tests.Architecture;
@@ -20,7 +18,9 @@ public sealed class ConventionRules
     [Fact]
     public void EndpointsResideUnderFeatures()
     {
-        Classes().That().ImplementInterface(typeof(IEndpoint))
+        Classes()
+            .That()
+            .ImplementInterface(typeof(IEndpoint))
             .Should()
             .ResideInNamespaceMatching(ArchitectureFixture.FeaturesNamespacePattern)
             .WithoutRequiringPositiveResults()
@@ -31,7 +31,9 @@ public sealed class ConventionRules
     [Fact]
     public void HandlersAreSealed()
     {
-        Classes().That().HaveNameEndingWith("Handler")
+        Classes()
+            .That()
+            .HaveNameEndingWith("Handler")
             .Should()
             .BeSealed()
             .WithoutRequiringPositiveResults()
@@ -42,7 +44,9 @@ public sealed class ConventionRules
     [Fact]
     public void HandlersResideUnderFeatures()
     {
-        Classes().That().HaveNameEndingWith("Handler")
+        Classes()
+            .That()
+            .HaveNameEndingWith("Handler")
             .Should()
             .ResideInNamespaceMatching(ArchitectureFixture.FeaturesNamespacePattern)
             .WithoutRequiringPositiveResults()
@@ -57,9 +61,15 @@ public sealed class ConventionRules
     [Fact]
     public void HandlersDoNotDependOnAspNetHttp()
     {
-        Classes().That().HaveNameEndingWith("Handler")
+        Classes()
+            .That()
+            .HaveNameEndingWith("Handler")
             .Should()
-            .NotDependOnAny(Types().That().ResideInNamespaceMatching(ArchitectureFixture.AspNetHttpNamespacePattern))
+            .NotDependOnAny(
+                Types()
+                    .That()
+                    .ResideInNamespaceMatching(ArchitectureFixture.AspNetHttpNamespacePattern)
+            )
             .WithoutRequiringPositiveResults()
             .Check(ArchitectureFixture.Architecture);
     }

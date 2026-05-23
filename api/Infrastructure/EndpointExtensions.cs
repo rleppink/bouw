@@ -17,9 +17,15 @@ public static class EndpointExtensions
     {
         foreach (var type in typeof(EndpointExtensions).Assembly.GetTypes())
         {
-            if (type is { IsClass: true, IsAbstract: false } && typeof(IEndpoint).IsAssignableFrom(type))
+            if (
+                type is { IsClass: true, IsAbstract: false }
+                && typeof(IEndpoint).IsAssignableFrom(type)
+            )
             {
-                var map = type.GetMethod(nameof(IEndpoint.Map), BindingFlags.Public | BindingFlags.Static);
+                var map = type.GetMethod(
+                    nameof(IEndpoint.Map),
+                    BindingFlags.Public | BindingFlags.Static
+                );
                 map?.Invoke(obj: null, parameters: [app]);
             }
         }

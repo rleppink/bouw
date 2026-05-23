@@ -32,8 +32,7 @@ internal static class ArchitectureFixture
     public const string ApiSlicePattern = "Bouw.API.(**)";
 
     /// <summary>The architecture under test, loaded once from the API assembly.</summary>
-    public static readonly ArchUnitNET.Domain.Architecture Architecture =
-        new ArchLoader()
-            .LoadAssemblies(typeof(Bouw.API.Infrastructure.IEndpoint).Assembly)
-            .Build();
+    public static readonly ArchUnitNET.Domain.Architecture Architecture = new ArchLoader()
+        .LoadAssemblies(typeof(Bouw.API.Infrastructure.IEndpoint).Assembly)
+        .Build();
 }

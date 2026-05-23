@@ -1,5 +1,4 @@
 using ArchUnitNET.xUnit;
-
 using static ArchUnitNET.Fluent.Slices.SliceRuleDefinition;
 
 namespace Bouw.API.Tests.Architecture;

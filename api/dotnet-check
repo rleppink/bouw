@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+set -eu
+
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+ROOT_DIR=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)
+CONFIGURATION="${CONFIGURATION:-Release}"
+
+cd "$SCRIPT_DIR"
+
+echo "==> dotnet tool restore"
+dotnet tool restore
+
+echo "==> csharpier check"
+dotnet csharpier check "$ROOT_DIR"
+
+echo "==> dotnet restore --locked-mode"
+dotnet restore "$ROOT_DIR/Bouw.sln" --locked-mode
+
+echo "==> dotnet build ($CONFIGURATION)"
+dotnet build "$ROOT_DIR/Bouw.sln" --configuration "$CONFIGURATION" --no-restore
+
+echo "==> dotnet test ($CONFIGURATION)"
+dotnet test "$ROOT_DIR/Bouw.sln" --configuration "$CONFIGURATION" --no-build --no-restore

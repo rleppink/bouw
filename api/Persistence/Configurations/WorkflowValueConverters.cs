@@ -44,7 +44,11 @@ internal static class WorkflowValueConverters
             Entities.WorkflowActionType.AskUserInput => "ask_user_input",
             Entities.WorkflowActionType.CallLlm => "call_llm",
             Entities.WorkflowActionType.EditDocument => "edit_document",
-            _ => throw new ArgumentOutOfRangeException(nameof(actionType), actionType, message: null),
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(actionType),
+                actionType,
+                message: null
+            ),
         };
 
     private static WorkflowActionType ToWorkflowActionType(string value) =>

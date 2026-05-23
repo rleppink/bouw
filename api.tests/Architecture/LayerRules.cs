@@ -1,5 +1,4 @@
 using ArchUnitNET.xUnit;
-
 using static ArchUnitNET.Fluent.ArchRuleDefinition;
 
 namespace Bouw.API.Tests.Architecture;
@@ -15,9 +14,15 @@ public sealed class LayerRules
     [Fact]
     public void PersistenceDoesNotDependOnFeatures()
     {
-        Types().That().ResideInNamespaceMatching(ArchitectureFixture.PersistenceNamespacePattern)
+        Types()
+            .That()
+            .ResideInNamespaceMatching(ArchitectureFixture.PersistenceNamespacePattern)
             .Should()
-            .NotDependOnAny(Types().That().ResideInNamespaceMatching(ArchitectureFixture.FeaturesNamespacePattern))
+            .NotDependOnAny(
+                Types()
+                    .That()
+                    .ResideInNamespaceMatching(ArchitectureFixture.FeaturesNamespacePattern)
+            )
             .WithoutRequiringPositiveResults()
             .Check(ArchitectureFixture.Architecture);
     }
@@ -26,9 +31,15 @@ public sealed class LayerRules
     [Fact]
     public void InfrastructureDoesNotDependOnFeatures()
     {
-        Types().That().ResideInNamespaceMatching(ArchitectureFixture.InfrastructureNamespacePattern)
+        Types()
+            .That()
+            .ResideInNamespaceMatching(ArchitectureFixture.InfrastructureNamespacePattern)
             .Should()
-            .NotDependOnAny(Types().That().ResideInNamespaceMatching(ArchitectureFixture.FeaturesNamespacePattern))
+            .NotDependOnAny(
+                Types()
+                    .That()
+                    .ResideInNamespaceMatching(ArchitectureFixture.FeaturesNamespacePattern)
+            )
             .WithoutRequiringPositiveResults()
             .Check(ArchitectureFixture.Architecture);
     }
@@ -41,9 +52,15 @@ public sealed class LayerRules
     [Fact]
     public void ProgramDoesNotDependOnFeatures()
     {
-        Classes().That().HaveName("Program")
+        Classes()
+            .That()
+            .HaveName("Program")
             .Should()
-            .NotDependOnAny(Types().That().ResideInNamespaceMatching(ArchitectureFixture.FeaturesNamespacePattern))
+            .NotDependOnAny(
+                Types()
+                    .That()
+                    .ResideInNamespaceMatching(ArchitectureFixture.FeaturesNamespacePattern)
+            )
             .WithoutRequiringPositiveResults()
             .Check(ArchitectureFixture.Architecture);
     }
