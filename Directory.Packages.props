@@ -6,7 +6,9 @@
 
   <ItemGroup>
     <!-- Runtime / framework packages -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.1" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
   </ItemGroup>
 
   <ItemGroup>
