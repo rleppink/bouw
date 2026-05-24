@@ -14,15 +14,12 @@ public sealed class WorkflowConfiguration : IEntityTypeConfiguration<Workflow>
 
         builder.HasKey(workflow => workflow.Id);
         builder.Property(workflow => workflow.Id).ValueGeneratedNever();
-        builder.Property(workflow => workflow.Key).HasMaxLength(80).IsRequired();
         builder.Property(workflow => workflow.Name).HasMaxLength(160).IsRequired();
         builder.Property(workflow => workflow.Description).HasMaxLength(1000).IsRequired();
         builder
             .Property(workflow => workflow.Status)
             .HasConversion(WorkflowValueConverters.WorkflowStatus)
             .HasMaxLength(40);
-
-        builder.HasIndex(workflow => workflow.Key).IsUnique();
 
         builder
             .HasMany(workflow => workflow.Steps)

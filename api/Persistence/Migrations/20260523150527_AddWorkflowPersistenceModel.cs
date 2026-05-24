@@ -17,7 +17,6 @@ namespace Bouw.API.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Key = table.Column<string>(type: "character varying(80)", maxLength: 80, nullable: false),
                     Name = table.Column<string>(type: "character varying(160)", maxLength: 160, nullable: false),
                     Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     Status = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false)
@@ -215,12 +214,6 @@ namespace Bouw.API.Persistence.Migrations
                 name: "IX_workflow_steps_WorkflowId_Position",
                 table: "workflow_steps",
                 columns: new[] { "WorkflowId", "Position" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_workflows_Key",
-                table: "workflows",
-                column: "Key",
                 unique: true);
         }
 

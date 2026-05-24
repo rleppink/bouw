@@ -6,17 +6,15 @@ public sealed class Workflow
 
     private Workflow() { }
 
-    public Workflow(string key, string name, string description, WorkflowStatus status)
+    public Workflow(string name, string description, WorkflowStatus status)
     {
         this.Id = Guid.NewGuid();
-        this.Key = key;
         this.Name = name;
         this.Description = description;
         this.Status = status;
     }
 
     public Guid Id { get; private set; }
-    public string Key { get; private set; } = string.Empty;
     public string Name { get; private set; } = string.Empty;
     public string Description { get; private set; } = string.Empty;
     public WorkflowStatus Status { get; private set; }
@@ -26,7 +24,7 @@ public sealed class Workflow
     {
         if (this.steps.Exists(step => string.Equals(step.Key, key, StringComparison.Ordinal)))
         {
-            throw new InvalidOperationException($"Workflow '{this.Key}' already has step '{key}'.");
+            throw new InvalidOperationException($"Workflow '{this.Id}' already has step '{key}'.");
         }
 
         var step = new WorkflowStep(this.Id, key, name, position);

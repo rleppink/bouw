@@ -15,8 +15,7 @@ function asResult(value: Partial<ReturnType<typeof useWorkflow>>): ReturnType<ty
 }
 
 const workflow: WorkflowResponse = {
-  id: '1',
-  key: 'frame',
+  id: '11111111-1111-1111-1111-111111111111',
   name: 'Frame',
   description: 'Frame the work',
   status: 'active',
@@ -43,7 +42,7 @@ describe('ViewWorkflow', () => {
   it('shows a loading state while pending', () => {
     mockUseWorkflow.mockReturnValue(asResult({ isPending: true, isError: false }))
 
-    render(<ViewWorkflow workflowKey="frame" />)
+    render(<ViewWorkflow workflowId="11111111-1111-1111-1111-111111111111" />)
 
     expect(screen.getByRole('status')).toHaveTextContent(/loading workflow/i)
   })
@@ -51,7 +50,7 @@ describe('ViewWorkflow', () => {
   it('shows an error state on failure', () => {
     mockUseWorkflow.mockReturnValue(asResult({ isPending: false, isError: true }))
 
-    render(<ViewWorkflow workflowKey="frame" />)
+    render(<ViewWorkflow workflowId="11111111-1111-1111-1111-111111111111" />)
 
     expect(screen.getByRole('alert')).toHaveTextContent(/could not load/i)
   })
@@ -59,7 +58,7 @@ describe('ViewWorkflow', () => {
   it('shows a not found state when the API returns no workflow', () => {
     mockUseWorkflow.mockReturnValue(asResult({ isPending: false, isError: false, data: null }))
 
-    render(<ViewWorkflow workflowKey="missing" />)
+    render(<ViewWorkflow workflowId="missing" />)
 
     expect(screen.getByRole('alert')).toHaveTextContent(/not found/i)
   })
@@ -67,10 +66,10 @@ describe('ViewWorkflow', () => {
   it('renders workflow, step, and action values', () => {
     mockUseWorkflow.mockReturnValue(asResult({ isPending: false, isError: false, data: workflow }))
 
-    render(<ViewWorkflow workflowKey="frame" />)
+    render(<ViewWorkflow workflowId="11111111-1111-1111-1111-111111111111" />)
 
     expect(screen.getByRole('heading', { name: 'Frame' })).toBeInTheDocument()
-    expect(screen.getByText(/frame .* active/)).toBeInTheDocument()
+    expect(screen.getByText('active')).toBeInTheDocument()
     expect(screen.getByText('Frame the work')).toBeInTheDocument()
     expect(screen.getByText('10. Interview')).toBeInTheDocument()
     expect(screen.getByText('interview')).toBeInTheDocument()

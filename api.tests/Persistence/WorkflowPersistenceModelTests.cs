@@ -95,7 +95,7 @@ public sealed class WorkflowPersistenceModelTests
     [Fact]
     public void StartingWorkflowCreatesSessionWithOrderedSteps()
     {
-        var workflow = new Workflow("frame", "Frame", "Frame the work", WorkflowStatus.Active);
+        var workflow = new Workflow("Frame", "Frame the work", WorkflowStatus.Active);
         workflow.AddStep("synthesize", "Synthesize", position: 20);
         workflow.AddStep("interview", "Interview", position: 10);
 
@@ -114,7 +114,7 @@ public sealed class WorkflowPersistenceModelTests
     [Fact]
     public void DocumentUpdatesIncrementVersion()
     {
-        var workflow = new Workflow("plan", "Plan", "Plan the work", WorkflowStatus.Active);
+        var workflow = new Workflow("Plan", "Plan the work", WorkflowStatus.Active);
         var session = workflow.StartSession(
             "Plan a feature",
             new DateTimeOffset(2026, 5, 23, 10, 15, 0, TimeSpan.Zero)

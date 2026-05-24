@@ -155,11 +155,6 @@ namespace Bouw.API.Persistence.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasMaxLength(80)
-                        .HasColumnType("character varying(80)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(160)
@@ -171,9 +166,6 @@ namespace Bouw.API.Persistence.Migrations
                         .HasColumnType("character varying(40)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Key")
-                        .IsUnique();
 
                     b.ToTable("workflows", (string)null);
                 });

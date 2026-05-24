@@ -15,17 +15,12 @@ public sealed class GetWorkflowHandler
         this.db = db;
     }
 
-    public async Task<WorkflowResponse?> HandleAsync(
-        string key,
-        CancellationToken cancellationToken
-    )
+    public async Task<WorkflowResponse?> HandleAsync(Guid id, CancellationToken cancellationToken)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(key);
-
         var workflow = await this
             .db.Workflows.Include(workflow => workflow.Steps)
                 .ThenInclude(step => step.Actions)
-            .SingleOrDefaultAsync(workflow => workflow.Key == key, cancellationToken)
+            .SingleOrDefaultAsync(workflow => workflow.Id == id, cancellationToken)
             .ConfigureAwait(false);
 
         return workflow is null ? null : Map(workflow);
@@ -34,7 +29,6 @@ public sealed class GetWorkflowHandler
     private static WorkflowResponse Map(Workflow workflow) =>
         new(
             workflow.Id,
-            workflow.Key,
             workflow.Name,
             workflow.Description,
             ToResponseValue(workflow.Status),
