@@ -1,16 +1,21 @@
 using System.Reflection;
 using Bouw.API.Features.Workflows.GetWorkflow;
 using Bouw.API.Persistence;
+using Bouw.API.Persistence.Seeding;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // The build-time OpenAPI generator runs the app outside our launch profile, so
 // appsettings.Development.json is not loaded and no real database connection is needed.
-var connectionString = Assembly.GetEntryAssembly()?.GetName().Name switch
+var isOpenApiGeneration = string.Equals(
+    Assembly.GetEntryAssembly()?.GetName().Name,
+    "GetDocument.Insider",
+    StringComparison.Ordinal
+);
+var connectionString = isOpenApiGeneration switch
 {
-    "GetDocument.Insider" =>
-        "Host=localhost;Database=bouw_openapi;Username=openapi;Password=openapi",
+    true => "Host=localhost;Database=bouw_openapi;Username=openapi;Password=openapi",
     _ => builder.Configuration.GetConnectionString("Bouw")
         ?? throw new InvalidOperationException(
             "Missing required connection string 'ConnectionStrings:Bouw'."
@@ -29,6 +34,13 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+
+    if (!isOpenApiGeneration)
+    {
+        await DevelopmentDatabaseSeeder
+            .SeedAsync(app.Services, app.Lifetime.ApplicationStopping)
+            .ConfigureAwait(false);
+    }
 }
 
 app.UseHttpsRedirection();
