@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgres:18-bookworm
+    environment:
+      POSTGRES_DB: bouw
+      POSTGRES_USER: bouw
+      POSTGRES_PASSWORD: bouw
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bouw -d bouw"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+  api:
+    image: mcr.microsoft.com/dotnet/sdk:10.0
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Bouw: Host=postgres;Port=5432;Database=bouw;Username=bouw;Password=bouw
+      DOTNET_USE_POLLING_FILE_WATCHER: "1"
+    working_dir: /workspace
+    command: dotnet run --project api/Bouw.API.csproj --no-launch-profile
+    volumes:
+      - .:/workspace
+      - api_nuget:/root/.nuget/packages
+
+  web:
+    image: node:22-bookworm-slim
+    depends_on:
+      - api
+    environment:
+      API_PROXY_TARGET: http://api:8080
+      VITE_API_URL: /api/
+    working_dir: /app
+    command: sh -c "npm ci && npm run dev -- --host 0.0.0.0"
+    ports:
+      - "127.0.0.1::5173"
+    volumes:
+      - ./web:/app
+      - web_node_modules:/app/node_modules
+
+volumes:
+  postgres_data:
+  api_nuget:
+  web_node_modules:
