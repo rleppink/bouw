@@ -125,7 +125,7 @@ describe('architecture', () => {
     const offenders = Object.entries(sources)
       // Generated code is exempt, matching the backend analyzer's
       // ConfigureGeneratedCodeAnalysis(None).
-      .filter(([path]) => !path.endsWith('routeTree.gen.ts'))
+      .filter(([path]) => !path.endsWith('routeTree.gen.ts') && !path.endsWith('api.generated.ts'))
       .map(([path, content]) => {
         const lines = content.split('\n')
         let count = lines.length

@@ -15,7 +15,7 @@ import tseslint from 'typescript-eslint'
 import prettier from 'eslint-config-prettier'
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'coverage/**', 'src/routeTree.gen.ts'] },
+  { ignores: ['dist/**', 'coverage/**', 'src/routeTree.gen.ts', 'src/lib/api.generated.ts'] },
 
   // Everything gets the base JS rules.
   js.configs.recommended,
