@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WorkflowsRouteImport } from './routes/workflows'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WorkflowsKeyRouteImport } from './routes/workflows_.$key'
 
 const WorkflowsRoute = WorkflowsRouteImport.update({
   id: '/workflows',
@@ -22,31 +23,40 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorkflowsKeyRoute = WorkflowsKeyRouteImport.update({
+  id: '/workflows_/$key',
+  path: '/workflows/$key',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/workflows': typeof WorkflowsRoute
+  '/workflows/$key': typeof WorkflowsKeyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/workflows': typeof WorkflowsRoute
+  '/workflows/$key': typeof WorkflowsKeyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/workflows': typeof WorkflowsRoute
+  '/workflows_/$key': typeof WorkflowsKeyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/workflows'
+  fullPaths: '/' | '/workflows' | '/workflows/$key'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/workflows'
-  id: '__root__' | '/' | '/workflows'
+  to: '/' | '/workflows' | '/workflows/$key'
+  id: '__root__' | '/' | '/workflows' | '/workflows_/$key'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   WorkflowsRoute: typeof WorkflowsRoute
+  WorkflowsKeyRoute: typeof WorkflowsKeyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/workflows_/$key': {
+      id: '/workflows_/$key'
+      path: '/workflows/$key'
+      fullPath: '/workflows/$key'
+      preLoaderRoute: typeof WorkflowsKeyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   WorkflowsRoute: WorkflowsRoute,
+  WorkflowsKeyRoute: WorkflowsKeyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

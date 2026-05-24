@@ -9,8 +9,8 @@ as executable tests (see [Architecture](#architecture)).
 ## Prerequisites
 
 - **Node** `^20.19.0 || >=22.12.0` (Vite 8's engine requirement).
-- The backend running locally on `http://localhost:5000` if you want live data;
-  the UI loads without it (queries just error).
+- The backend running locally on `http://localhost:5036` if you want live data;
+  Vite proxies `/api` to it during development.
 
 ## Getting started
 
@@ -20,8 +20,15 @@ npm run dev       # Vite dev server on http://localhost:5173
 ```
 
 No `.env` file is required for local development. `VITE_API_URL` defaults to
-`http://localhost:5000` (validated at startup in `src/env.ts`). To point at a
-different backend, create `web/.env.local`:
+`/api/` (validated at startup in `src/env.ts`), and Vite proxies that path to
+`http://localhost:5036`. To point the proxy at a different backend, create
+`web/.env.local`:
+
+```bash
+API_PROXY_TARGET=http://localhost:8080
+```
+
+To bypass the dev proxy entirely and call an API URL directly, set:
 
 ```bash
 VITE_API_URL=https://api.example.com

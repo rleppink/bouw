@@ -1,10 +1,10 @@
 import { defineConfig, mergeConfig } from 'vitest/config'
 
-import viteConfig from './vite.config'
+import { createViteConfig } from './vite.config'
 
 // Inherits the path alias from vite.config so `@/…` resolves in tests too.
 export default mergeConfig(
-  viteConfig,
+  createViteConfig('test'),
   defineConfig({
     test: {
       globals: true,
