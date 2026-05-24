@@ -6,3 +6,6 @@ PATH="$REPO_ROOT/api:$PATH"
 
 cd "$REPO_ROOT/api"
 dotnet check
+
+cd "$REPO_ROOT/web"
+npm run check
