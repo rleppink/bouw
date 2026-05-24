@@ -1,5 +1,4 @@
 using ArchUnitNET.xUnit;
-using Bouw.API.Infrastructure;
 using static ArchUnitNET.Fluent.ArchRuleDefinition;
 
 namespace Bouw.API.Tests.Architecture;
@@ -11,16 +10,27 @@ namespace Bouw.API.Tests.Architecture;
 public sealed class ConventionRules
 {
     /// <summary>
-    /// #5 — every <see cref="IEndpoint"/> implementor lives inside a slice. The
-    /// static stand-in for "every endpoint is reachable from MapFeatures" (true
-    /// reachability is a runtime concern, see archunit-tests.md).
+    /// #4 — endpoint mapping entrypoints live inside slices.
     /// </summary>
     [Fact]
     public void EndpointsResideUnderFeatures()
     {
         Classes()
             .That()
-            .ImplementInterface(typeof(IEndpoint))
+            .HaveName("Endpoint")
+            .Should()
+            .ResideInNamespaceMatching(ArchitectureFixture.FeaturesNamespacePattern)
+            .WithoutRequiringPositiveResults()
+            .Check(ArchitectureFixture.Architecture);
+    }
+
+    /// <summary>#5 — feature service registrations live inside slices.</summary>
+    [Fact]
+    public void FeatureServiceRegistrationsResideUnderFeatures()
+    {
+        Classes()
+            .That()
+            .HaveName("FeatureServices")
             .Should()
             .ResideInNamespaceMatching(ArchitectureFixture.FeaturesNamespacePattern)
             .WithoutRequiringPositiveResults()
@@ -40,7 +50,19 @@ public sealed class ConventionRules
             .Check(ArchitectureFixture.Architecture);
     }
 
-    /// <summary>#7 — handlers live inside a slice, where business logic belongs.</summary>
+    /// <summary>#7 — handlers include the slice name in their type name.</summary>
+    [Fact]
+    public void HandlersUseSliceName()
+    {
+        foreach (var handler in ArchitectureFixture.FeatureHandlerTypes)
+        {
+            var sliceName = handler.Namespace!.Split('.').Last();
+
+            Assert.Equal($"{sliceName}Handler", handler.Name);
+        }
+    }
+
+    /// <summary>#8 — handlers live inside a slice, where business logic belongs.</summary>
     [Fact]
     public void HandlersResideUnderFeatures()
     {
@@ -54,7 +76,7 @@ public sealed class ConventionRules
     }
 
     /// <summary>
-    /// #8 (tune later) — handlers hold logic, not HTTP. They must not depend on
+    /// #9 (tune later) — handlers hold logic, not HTTP. They must not depend on
     /// ASP.NET MVC/HTTP plumbing; that belongs in Endpoint.cs. Revisit the banned
     /// set if handlers legitimately need e.g. IResult — see archunit-tests.md.
     /// </summary>

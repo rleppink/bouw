@@ -12,21 +12,19 @@ codebase is greenfield.
 
 ---
 
-## The single most important caveat: greenfield ⇒ vacuous rules
+## The single most important caveat: vacuous rules
 
-The API is greenfield. There is **no** `Features/` or `Persistence/` yet, and
-`Infrastructure/` holds only the endpoint marker plumbing. ArchUnitNET checks
-types in a compiled assembly, so a rule whose subject set is empty (e.g. "all
-`*Handler` classes") has **nothing to check** and would, by ArchUnitNET's
-default, *fail* — it requires positive results, not merely the absence of
-violations.
+ArchUnitNET checks types in a compiled assembly, so a rule whose subject set is
+empty (e.g. "all classes ending in `Handler`") has **nothing to check** and
+would, by ArchUnitNET's default, *fail* — it requires positive results, not
+merely the absence of violations.
 
 We deliberately relax that with **`.WithoutRequiringPositiveResults()`** on every
 type/class rule. The effect:
 
-- **Today:** rules with no matching types pass vacuously — they are dormant
-  guardrails.
-- **As slices land:** the moment a `*Handler` (or slice, or `IEndpoint`) appears,
+- **When a rule has no matching types:** it passes vacuously — it is a dormant
+  guardrail.
+- **As slices land:** the moment a `<SliceName>Handler` (or slice) appears,
   the rule binds to it and **fails closed** on any violation.
 
 The one trade-off to know: a rule whose predicate matches *nothing* will pass
@@ -37,7 +35,7 @@ A reasonable later hardening: once a layer is guaranteed non-empty, drop
 `WithoutRequiringPositiveResults()` from its rule to regain the
 "is-this-actually-testing-something" assurance.
 
-Slice rules (#1, #10) do **not** carry the flag — `NotDependOnEachOther` and
+Slice rules (#1, #11) do **not** carry the flag — `NotDependOnEachOther` and
 `BeFreeOfCycles` pass cleanly over an empty/acyclic slice set.
 
 ---
@@ -46,13 +44,11 @@ Slice rules (#1, #10) do **not** carry the flag — `NotDependOnEachOther` and
 
 | File                                            | Contents                                                                                                                                     |
 |-------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
-| `api/Infrastructure/IEndpoint.cs`               | `IEndpoint` marker: `static abstract void Map(IEndpointRouteBuilder)`.                                                                       |
-| `api/Infrastructure/EndpointExtensions.cs`      | `MapFeatures()` — reflection-scans the assembly for concrete `IEndpoint` implementors and invokes each `Map`. The single registration point. |
-| `api/Program.cs`                                | Calls `app.MapFeatures();` (scans to zero endpoints today — correct).                                                                        |
+| `api/Program.cs`                                | Explicitly calls each slice's service and endpoint extension methods.                                                                        |
 | `api.tests/Architecture/ArchitectureFixture.cs` | Loads the API assembly once; holds the namespace/slice patterns.                                                                             |
-| `api.tests/Architecture/SliceRules.cs`          | #1, #10.                                                                                                                                     |
-| `api.tests/Architecture/LayerRules.cs`          | #2 (×2), #4.                                                                                                                                 |
-| `api.tests/Architecture/ConventionRules.cs`     | #5, #6, #7, #8.                                                                                                                              |
+| `api.tests/Architecture/SliceRules.cs`          | #1, #11.                                                                                                                                     |
+| `api.tests/Architecture/LayerRules.cs`          | #2 (×2).                                                                                                                                     |
+| `api.tests/Architecture/ConventionRules.cs`     | #5, #6, #7, #8, #9.                                                                                                                          |
 
 Package: `TngTech.ArchUnitNET.xUnit` 0.13.3 (xUnit v2), via central package
 management in `Directory.Packages.props`.
@@ -70,31 +66,32 @@ Legend — **✅ implemented** · **🟡 optional / later** · **❌ not via Arc
 |---|-----------------------------------------------------------------------------|--------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 1 | **No slice depends on another slice**                                       | Yes          | ✅      | `Slices().Matching("Bouw.API.Features.(**)").Should().NotDependOnEachOther()`. THE invariant. `(**)` captures the whole path after `Features.`, so `Workflows.CreateWorkflow` and `Workflows.EditWorkflow` are **distinct** slices — the grouping folder is *not* a boundary, matching the doc.                                                                                                                                          |
 | 2 | **Dependencies one-way: Features → Persistence/Infrastructure, never back** | Yes          | ✅      | Two rules: `Persistence` ⇏ `Features` and `Infrastructure` ⇏ `Features`, via `NotDependOnAny`.                                                                                                                                                                                                                                                                                                                                           |
-| 3 | **Every `IEndpoint` is reachable from `MapFeatures`**                       | No (runtime) | ❌→🟡   | ArchUnitNET checks *static* type deps, not reflection reachability. `MapFeatures` reflection-scans the whole assembly, so every `IEndpoint` is registered *by construction* — there is nothing static to assert. The real check is a runtime test (`WebApplicationFactory<Program>` + `EndpointDataSource` vs. types implementing `IEndpoint`). Feasible (`Program` is public) but out of scope. **Static substitute we ship:** rule #5. |
+| 3 | **Every slice endpoint is mapped by `Program`**                             | No (runtime) | ❌→🟡   | ArchUnitNET checks static type deps, not the runtime endpoint table. With explicit startup wiring, reachability is best covered by a runtime test (`WebApplicationFactory<Program>` + `EndpointDataSource`). Feasible (`Program` is public) but out of scope. **Static substitutes we ship:** rules #5 and #6. |
 
 ### High-value additions (beyond the doc) — ✅ implemented
 
 | # | Rule                                                   | Mechanism / why                                                                                                                                                                                           |
 |---|--------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 4 | **`Program` must not depend on any `Features.*` type** | Encodes "adding a slice never edits `Program.cs`" and proves the wiring is reflection-based. Targets the class named `Program` (top-level statements put it in the **global** namespace, not `Bouw.API`). |
-| 5 | **`IEndpoint` implementors reside under `Features.*`** | Static stand-in for #3's placement intent. `Classes().That().ImplementInterface(typeof(IEndpoint)).Should().ResideInNamespaceMatching(...)`.                                                              |
-| 6 | **Handlers are `sealed`**                              | Doc: "Handler.cs — a `sealed` class". `Classes().That().HaveNameEndingWith("Handler").Should().BeSealed()`.                                                                                               |
-| 7 | **Handlers reside under `Features.*`**                 | Keeps business logic inside slices.                                                                                                                                                                       |
+| 4 | **Endpoint mapping classes reside under `Features.*`** | Static stand-in for #3's placement intent. `Classes().That().HaveName("Endpoint").Should().ResideInNamespaceMatching(...)`.                                                                               |
+| 5 | **Feature service registrations reside under `Features.*`** | Keeps slice-owned DI hooks in slices. `Classes().That().HaveName("FeatureServices").Should().ResideInNamespaceMatching(...)`.                                                                              |
+| 6 | **Handlers are `sealed`**                              | Doc: "`<SliceName>Handler.cs` — a `sealed` class". `Classes().That().HaveNameEndingWith("Handler").Should().BeSealed()`.                                                                                  |
+| 7 | **Handlers use the slice name**                        | Avoids dozens of ambiguous `Handler` types in DI, stack traces, logs, and search results. Reflection assertion: namespace leaf `GetWorkflow` requires type name `GetWorkflowHandler`.                    |
+| 8 | **Handlers reside under `Features.*`**                 | Keeps business logic inside slices.                                                                                                                                                                       |
 
 ### Worth considering — 🟡 (expressible & useful, optional / tune later)
 
 | #  | Rule                                                                           | Status                              | Why optional                                                                                                                                                                    |
 |----|--------------------------------------------------------------------------------|-------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 8  | Handlers must not depend on ASP.NET HTTP/MVC plumbing                          | ✅ shipped, **tune the banned set** | Enforces "Endpoint = HTTP, Handler = logic". Currently bans `Microsoft.AspNetCore.Mvc` and `Microsoft.AspNetCore.Http`. Revisit if a handler legitimately needs e.g. `IResult`. |
-| 9  | Entities in `Persistence.Entities`, EF configs in `Persistence.Configurations` | follow-up                           | Light placement guard; premature until Persistence exists, harmless when empty.                                                                                                 |
-| 10 | Whole-API namespace cycle freedom                                              | ✅ shipped                          | `Slices().Matching("Bouw.API.(**)").Should().BeFreeOfCycles()` — complements #1/#2 at the layer level.                                                                          |
-| 11 | Contracts named `*Request`/`*Response` reside in their slice                   | follow-up                           | Naming/placement is trivial to assert; low urgency.                                                                                                                             |
+| 9  | Handlers must not depend on ASP.NET HTTP/MVC plumbing                          | ✅ shipped, **tune the banned set** | Enforces "Endpoint = HTTP, Handler = logic". Currently bans `Microsoft.AspNetCore.Mvc` and `Microsoft.AspNetCore.Http`. Revisit if a handler legitimately needs e.g. `IResult`. |
+| 10 | Entities in `Persistence.Entities`, EF configs in `Persistence.Configurations` | follow-up                           | Light placement guard; premature until Persistence exists, harmless when empty.                                                                                                 |
+| 11 | Whole-API namespace cycle freedom                                              | ✅ shipped                          | `Slices().Matching("Bouw.API.(**)").Should().BeFreeOfCycles()` — complements #1/#2 at the layer level.                                                                          |
+| 12 | Contracts named `*Request`/`*Response` reside in their slice                   | follow-up                           | Naming/placement is trivial to assert; low urgency.                                                                                                                             |
 
 ### Would not — ❌ (skip, with reason)
 
 | Candidate                                                       | Why not                                                                                                                 |
 |-----------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|
-| Endpoint *runtime reachability* (#3)                            | Reflection/runtime, not a static dep. Do it as a `WebApplicationFactory<Program>` integration test.                     |
+| Endpoint *runtime reachability* (#3)                            | Runtime endpoint data, not a static dep. Do it as a `WebApplicationFactory<Program>` integration test.                  |
 | Ban MediatR / FluentValidation ("deliberately not used")        | Expressible, but better covered by *not referencing the package* + `BannedApiAnalyzers` (applied repo-wide). Redundant. |
 | Contracts must be `record`s                                     | ArchUnitNET has no clean "is record" predicate; checking synthesized members is brittle, low value.                     |
 | "Prefer duplication over the wrong abstraction" / rule-of-three | A human judgment call — not statically decidable.                                                                       |
@@ -119,9 +116,8 @@ These were verified empirically against the package while wiring the rules:
   explicit.
 - **Rules require positive results by default** — see the greenfield caveat above;
   hence `.WithoutRequiringPositiveResults()`.
-- **net10 / Mono.Cecil:** ArchUnitNET 0.13.3 parses the net10.0 assembly —
-  including `static abstract` interface members and collection expressions —
-  without issue. This was the highest-risk unknown and is now confirmed.
+- **net10 / Mono.Cecil:** ArchUnitNET 0.13.3 parses the net10.0 assembly,
+  including collection expressions, without issue.
 
 ---
 
@@ -141,7 +137,7 @@ Result, as expected:
 - **#1 failed** — the cross-slice reference was caught *even though both live under
   `Workflows/`*, confirming the grouping folder is not the boundary.
 - **#6 failed** — the unsealed handler was caught.
-- **#10 passed** — a one-way reference is not a cycle (no false positive).
+- **#11 passed** — a one-way reference is not a cycle (no false positive).
 
 The throwaway files were then deleted and the suite returned to green. Re-run this
 check if you change the slice pattern or the namespace regexes.
@@ -151,8 +147,8 @@ check if you change the slice pattern or the namespace regexes.
 ## Out-of-scope follow-ups
 
 - **#3 runtime reachability** — `WebApplicationFactory<Program>` integration test
-  comparing the live `EndpointDataSource` against types implementing `IEndpoint`.
-- **#9 / #11** — Persistence and contract placement rules; add when those layers
+  that asserts expected routes exist in the live `EndpointDataSource`.
+- **#10 / #12** — Persistence and contract placement rules; add when those layers
   exist.
 - **Harden vacuous rules** — once a layer is guaranteed non-empty, drop
   `WithoutRequiringPositiveResults()` for it.

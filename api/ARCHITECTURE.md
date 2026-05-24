@@ -17,13 +17,14 @@ on another slice.** Almost everything else follows from those two sentences.
 
 ```
 api/                                  (root namespace Bouw.API)
-├── Program.cs                        // builds the app; calls app.MapFeatures()
+├── Program.cs                        // builds the app; explicitly registers/maps slices
 ├── Features/                         // all slices live here
 │   └── Workflows/                    // topical grouping only — NOT a boundary
 │       ├── CreateWorkflow/           // a SLICE = one operation
 │       │   ├── Endpoint.cs           // route + filters (HTTP only)
-│       │   ├── Handler.cs            // the business logic for this op
-│       │   └── Contracts.cs          // request/response records
+│       │   ├── CreateWorkflowHandler.cs // the business logic for this op
+│       │   ├── FeatureServices.cs    // DI registration for this slice
+│       │   └── *Request/*Response.cs // request/response records
 │       └── EditWorkflow/
 │           └── …
 ├── Persistence/                      // the shared data model — used by every slice
@@ -48,11 +49,14 @@ Three concerns are the usual shape:
 
 - **`Endpoint.cs`** — maps one route (under a `MapGroup` prefix) and attaches
   filters. HTTP plumbing only; no logic.
-- **`Handler.cs`** — a `sealed` class, DI-injected with `BouwDbContext` and
-  whatever else it needs. **This is where business logic lives.** Thin for CRUD is
-  fine; the value is that there is *exactly one* obvious place per operation.
-- **`Contracts.cs`** — request/response `record`s. Distinct from entities so the
-  wire shape and the stored shape can diverge.
+- **`<SliceName>Handler.cs`** — a `sealed` class, DI-injected with `BouwDbContext`
+  and whatever else it needs. **This is where business logic lives.** Thin for
+  CRUD is fine; the value is that there is *exactly one* obvious place per
+  operation without 30 classes all named `Handler`.
+- **`FeatureServices.cs`** — exposes an `IServiceCollection` extension method for
+  the slice's DI registrations.
+- **`*Request.cs` / `*Response.cs`** — request/response `record`s. Distinct from
+  entities so the wire shape and the stored shape can diverge.
 
 There is **no separate Service or Logic layer** inside a slice — that would
 re-introduce the horizontal layering VSA exists to remove.
@@ -77,7 +81,7 @@ it — no mediator library.
 ```csharp
 app.MapPost("/workflows",
     async (CreateWorkflowRequest req, CreateWorkflowHandler handler, CancellationToken ct)
-        => await handler.Handle(req, ct));
+        => await handler.HandleAsync(req, ct));
 ```
 
 ## Persistence (the shared data model)
@@ -92,7 +96,7 @@ entities: inside a single bounded context the data model is common ground.
 - **Writes** go through the relevant entity and `SaveChangesAsync()`. Domain rules
   that must always hold can live as methods on the entity
   (`Workflow.AddStage()` rejecting duplicates); use-case orchestration stays in the
-  `Handler`.
+  `<SliceName>Handler`.
 - **Cross-topic queries are fine** — a slice grouped under `Workflows/` may read
   `User` data straight from the context. There is no wall to cross.
 
@@ -119,17 +123,17 @@ ArchUnitNET rules in the test project:
 - no slice references another slice (the core invariant);
 - dependencies point one way: `Features` → `Persistence` / `Infrastructure`, never
   back;
-- every `IEndpoint` is reachable from `MapFeatures`.
+- endpoints and feature service registration classes live under `Features`.
 
-New slices register themselves: `Endpoint.cs` implements `IEndpoint`
-(`static abstract void Map(...)`), and a single `MapFeatures()` extension
-reflection-scans the assembly and wires them all. **Adding a slice never edits
-`Program.cs`.**
+New slices expose explicit registration and mapping extension methods from inside
+the slice, for example `AddGetWorkflow()` and `MapGetWorkflow()`. `Program.cs`
+calls those methods directly. This keeps startup simple and debuggable; adding a
+slice intentionally edits `Program.cs`.
 
 ## Deliberately not used
 
 - **MediatR / a mediator** — direct DI removes the need (and the licence).
-- **Per-slice Service / Logic layers** — collapsed into `Handler`.
+- **Per-slice Service / Logic layers** — collapsed into `<SliceName>Handler`.
 - **Per-feature data ownership / bounded-context isolation** — we considered the
   modular-monolith path (private entities, published read contracts, ports,
   integration events — i.e. the DDD context-mapping patterns) and chose against

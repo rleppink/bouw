@@ -5,8 +5,7 @@ namespace Bouw.API.Tests.Architecture;
 
 /// <summary>
 /// Layer dependencies point one way: <c>Features</c> → <c>Persistence</c> /
-/// <c>Infrastructure</c>, never back; and <c>Program</c> never reaches into a
-/// slice.
+/// <c>Infrastructure</c>, never back.
 /// </summary>
 public sealed class LayerRules
 {
@@ -34,27 +33,6 @@ public sealed class LayerRules
         Types()
             .That()
             .ResideInNamespaceMatching(ArchitectureFixture.InfrastructureNamespacePattern)
-            .Should()
-            .NotDependOnAny(
-                Types()
-                    .That()
-                    .ResideInNamespaceMatching(ArchitectureFixture.FeaturesNamespacePattern)
-            )
-            .WithoutRequiringPositiveResults()
-            .Check(ArchitectureFixture.Architecture);
-    }
-
-    /// <summary>
-    /// #4 — Program must not statically depend on any slice. Encodes "adding a
-    /// slice never edits Program.cs": wiring is reflection-based via MapFeatures.
-    /// (The top-level Program class lives in the global namespace.)
-    /// </summary>
-    [Fact]
-    public void ProgramDoesNotDependOnFeatures()
-    {
-        Classes()
-            .That()
-            .HaveName("Program")
             .Should()
             .NotDependOnAny(
                 Types()

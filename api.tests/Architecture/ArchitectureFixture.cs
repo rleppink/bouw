@@ -11,6 +11,9 @@ namespace Bouw.API.Tests.Architecture;
 /// </summary>
 internal static class ArchitectureFixture
 {
+    private static readonly System.Reflection.Assembly ApiAssembly =
+        typeof(Bouw.API.Persistence.BouwDbContext).Assembly;
+
     // Anchored-prefix regexes: match the namespace itself AND any descendant
     // (e.g. Features and Features.Workflows.CreateWorkflow), but not a sibling
     // like FeaturesFoo. Used with ResideInNamespaceMatching, since the plain
@@ -19,7 +22,7 @@ internal static class ArchitectureFixture
     public const string PersistenceNamespacePattern = @"^Bouw\.API\.Persistence(\.|$)";
     public const string InfrastructureNamespacePattern = @"^Bouw\.API\.Infrastructure(\.|$)";
 
-    // ASP.NET HTTP/MVC plumbing handlers must stay clear of (rule #8). Tune the
+    // ASP.NET HTTP/MVC plumbing handlers must stay clear of (rule #9). Tune the
     // banned set as real handlers land — see archunit-tests.md.
     public const string AspNetHttpNamespacePattern = @"^Microsoft\.AspNetCore\.(Mvc|Http)(\.|$)";
 
@@ -28,11 +31,25 @@ internal static class ArchitectureFixture
     // distinct slices: the grouping folder (Workflows) is NOT a boundary.
     public const string FeaturesSlicePattern = "Bouw.API.Features.(**)";
 
-    // Whole-API slicing for layer-level cycle freedom (rule #10).
+    // Whole-API slicing for layer-level cycle freedom (rule #11).
     public const string ApiSlicePattern = "Bouw.API.(**)";
 
     /// <summary>The architecture under test, loaded once from the API assembly.</summary>
     public static readonly ArchUnitNET.Domain.Architecture Architecture = new ArchLoader()
-        .LoadAssemblies(typeof(Bouw.API.Infrastructure.IEndpoint).Assembly)
+        .LoadAssemblies(ApiAssembly)
         .Build();
+
+    public static IEnumerable<System.Type> FeatureHandlerTypes =>
+        ApiAssembly
+            .GetTypes()
+            .Where(type =>
+                type is { IsClass: true, IsAbstract: false }
+                && type.Name.EndsWith("Handler", StringComparison.Ordinal)
+                && type.Namespace is not null
+                && IsFeaturesNamespace(type.Namespace)
+            );
+
+    private static bool IsFeaturesNamespace(string namespaceName) =>
+        namespaceName.Equals("Bouw.API.Features", StringComparison.Ordinal)
+        || namespaceName.StartsWith("Bouw.API.Features.", StringComparison.Ordinal);
 }

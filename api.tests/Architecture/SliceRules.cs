@@ -24,7 +24,7 @@ public sealed class SliceRules
     }
 
     /// <summary>
-    /// #10 — the API is free of namespace dependency cycles. Complements the
+    /// #11 — the API is free of namespace dependency cycles. Complements the
     /// one-way layering rules at the whole-assembly level.
     /// </summary>
     [Fact]
