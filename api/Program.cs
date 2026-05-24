@@ -1,5 +1,6 @@
 using System.Reflection;
 using Bouw.API.Features.Workflows.GetWorkflow;
+using Bouw.API.Features.Workflows.GetWorkflows;
 using Bouw.API.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +19,7 @@ var connectionString = Assembly.GetEntryAssembly()?.GetName().Name switch
 };
 
 builder.Services.AddGetWorkflow();
+builder.Services.AddGetWorkflows();
 
 builder.Services.AddDbContext<BouwDbContext>(options =>
     options.UseNpgsql(connectionString).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
@@ -34,5 +36,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapGetWorkflow();
+app.MapGetWorkflows();
 
 await app.RunAsync().ConfigureAwait(false);

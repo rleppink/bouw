@@ -37,6 +37,29 @@
           }
         }
       }
+    },
+    "/workflows": {
+      "get": {
+        "tags": [
+          "Bouw.API"
+        ],
+        "operationId": "GetWorkflows",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorkflowResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
