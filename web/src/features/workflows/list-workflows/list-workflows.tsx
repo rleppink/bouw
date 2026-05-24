@@ -1,3 +1,5 @@
+import { Link } from '@tanstack/react-router'
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 
@@ -38,14 +40,16 @@ export function ListWorkflows() {
         <ul className="space-y-2">
           {visible.map((workflow) => (
             <li key={workflow.id}>
-              <Card>
-                <CardHeader>
-                  <CardTitle>{workflow.name}</CardTitle>
-                </CardHeader>
-                <CardContent className="text-muted-foreground text-sm">
-                  {workflow.status} · created {formatWorkflowDate(workflow.createdAt)}
-                </CardContent>
-              </Card>
+              <Link to="/workflows/$id" params={{ id: workflow.id }} className="block">
+                <Card className="hover:bg-muted/50 transition-colors">
+                  <CardHeader>
+                    <CardTitle>{workflow.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-muted-foreground text-sm">
+                    {workflow.status} · created {formatWorkflowDate(workflow.createdAt)}
+                  </CardContent>
+                </Card>
+              </Link>
             </li>
           ))}
         </ul>

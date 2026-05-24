@@ -24,7 +24,6 @@ export interface WorkflowStepResponse {
 
 export interface WorkflowResponse {
   id: string
-  key: string
   name: string
   description: string
   status: string
@@ -50,15 +49,15 @@ export type getWorkflowResponseError = getWorkflowResponse404 & {
 
 export type getWorkflowResponse = getWorkflowResponseSuccess | getWorkflowResponseError
 
-export const getGetWorkflowUrl = (key: string) => {
-  return `/workflows/${key}`
+export const getGetWorkflowUrl = (id: string) => {
+  return `/workflows/${id}`
 }
 
 export const getWorkflow = async (
-  key: string,
+  id: string,
   options?: RequestInit,
 ): Promise<getWorkflowResponse> => {
-  const res = await fetch(getGetWorkflowUrl(key), {
+  const res = await fetch(getGetWorkflowUrl(id), {
     ...options,
     method: 'GET',
   })

@@ -9,15 +9,15 @@ public static class Endpoint
         ArgumentNullException.ThrowIfNull(app);
 
         app.MapGet(
-                "/workflows/{key}",
+                "/workflows/{id:guid}",
                 async Task<Results<Ok<WorkflowResponse>, NotFound>> (
-                    string key,
+                    Guid id,
                     GetWorkflowHandler handler,
                     CancellationToken cancellationToken
                 ) =>
                 {
                     var workflow = await handler
-                        .HandleAsync(key, cancellationToken)
+                        .HandleAsync(id, cancellationToken)
                         .ConfigureAwait(false);
 
                     return workflow is null ? TypedResults.NotFound() : TypedResults.Ok(workflow);

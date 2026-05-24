@@ -3,14 +3,14 @@ import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { getGetWorkflowUrl, type WorkflowResponse } from '@/lib/api.generated'
 
-export const workflowQueryKey = (key: string) => ['workflow', key] as const
+export const workflowQueryKey = (id: string) => ['workflow', id] as const
 
 function toKyPath(path: string): string {
   return path.startsWith('/') ? path.slice(1) : path
 }
 
-async function fetchWorkflow(key: string): Promise<WorkflowResponse | null> {
-  const response = await api.get(toKyPath(getGetWorkflowUrl(key)), {
+async function fetchWorkflow(id: string): Promise<WorkflowResponse | null> {
+  const response = await api.get(toKyPath(getGetWorkflowUrl(id)), {
     throwHttpErrors: false,
   })
 
@@ -19,15 +19,15 @@ async function fetchWorkflow(key: string): Promise<WorkflowResponse | null> {
   }
 
   if (!response.ok) {
-    throw new Error(`Could not load workflow '${key}'.`)
+    throw new Error(`Could not load workflow '${id}'.`)
   }
 
   return response.json<WorkflowResponse>()
 }
 
-export function useWorkflow(key: string) {
+export function useWorkflow(id: string) {
   return useQuery({
-    queryKey: workflowQueryKey(key),
-    queryFn: () => fetchWorkflow(key),
+    queryKey: workflowQueryKey(id),
+    queryFn: () => fetchWorkflow(id),
   })
 }

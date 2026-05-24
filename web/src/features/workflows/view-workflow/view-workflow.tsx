@@ -3,11 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useWorkflow } from './use-workflow'
 
 type ViewWorkflowProps = {
-  workflowKey: string
+  workflowId: string
 }
 
-export function ViewWorkflow({ workflowKey }: ViewWorkflowProps) {
-  const query = useWorkflow(workflowKey)
+export function ViewWorkflow({ workflowId }: ViewWorkflowProps) {
+  const query = useWorkflow(workflowId)
 
   if (query.isPending) {
     return <p role="status">Loading workflow...</p>
@@ -26,9 +26,7 @@ export function ViewWorkflow({ workflowKey }: ViewWorkflowProps) {
   return (
     <section className="space-y-6">
       <header className="space-y-2">
-        <div className="text-muted-foreground text-sm">
-          {workflow.key} · {workflow.status}
-        </div>
+        <div className="text-muted-foreground text-sm">{workflow.status}</div>
         <h1 className="text-2xl font-semibold">{workflow.name}</h1>
         <p className="text-muted-foreground">{workflow.description}</p>
       </header>

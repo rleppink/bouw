@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ListWorkflows } from './list-workflows'
@@ -8,6 +9,23 @@ import type { WorkflowSummary } from './workflow.contracts'
 import { useWorkflowFilter } from './workflow-filter.store'
 
 vi.mock('./use-workflows')
+vi.mock('@tanstack/react-router', () => ({
+  Link: ({
+    children,
+    className,
+    params,
+    to,
+  }: {
+    children: ReactNode
+    className?: string
+    params: { id: string }
+    to: string
+  }) => (
+    <a className={className} href={to.replace('$id', params.id)}>
+      {children}
+    </a>
+  ),
+}))
 
 const mockUseWorkflows = vi.mocked(useWorkflows)
 
@@ -45,6 +63,10 @@ describe('ListWorkflows', () => {
     render(<ListWorkflows />)
     expect(screen.getByText('Foundation pour')).toBeInTheDocument()
     expect(screen.getByText('Roof inspection')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /foundation pour/i })).toHaveAttribute(
+      'href',
+      '/workflows/1',
+    )
   })
 
   it('shows an empty message when the filter matches nothing', async () => {
