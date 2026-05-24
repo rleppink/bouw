@@ -1,14 +1,21 @@
+using System.Reflection;
 using Bouw.API.Features.Workflows.GetWorkflow;
 using Bouw.API.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString =
-    builder.Configuration.GetConnectionString("Bouw")
-    ?? throw new InvalidOperationException(
-        "Missing required connection string 'ConnectionStrings:Bouw'."
-    );
+// The build-time OpenAPI generator runs the app outside our launch profile, so
+// appsettings.Development.json is not loaded and no real database connection is needed.
+var connectionString = Assembly.GetEntryAssembly()?.GetName().Name switch
+{
+    "GetDocument.Insider" =>
+        "Host=localhost;Database=bouw_openapi;Username=openapi;Password=openapi",
+    _ => builder.Configuration.GetConnectionString("Bouw")
+        ?? throw new InvalidOperationException(
+            "Missing required connection string 'ConnectionStrings:Bouw'."
+        ),
+};
 
 builder.Services.AddGetWorkflow();
 
