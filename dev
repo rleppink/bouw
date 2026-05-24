@@ -70,7 +70,7 @@ fi
 
 case "$command" in
   up)
-    compose up -d "$@"
+    compose up -d --wait "$@"
     printf 'App URL: %s\n' "$(app_url)"
     ;;
   url)
