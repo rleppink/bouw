@@ -75,12 +75,7 @@ public static class DevelopmentDatabaseSeeder
 
     private static Workflow CreateWorkflow(WorkflowSeedDefinition definition)
     {
-        var workflow = new Workflow(
-            definition.Key,
-            definition.Name,
-            definition.Description,
-            definition.Status
-        );
+        var workflow = new Workflow(definition.Name, definition.Description, definition.Status);
 
         foreach (var stepDefinition in definition.Steps)
         {
