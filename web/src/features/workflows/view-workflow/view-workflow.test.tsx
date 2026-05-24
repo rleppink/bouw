@@ -77,4 +77,35 @@ describe('ViewWorkflow', () => {
     expect(screen.getByText('ask_user_input')).toBeInTheDocument()
     expect(screen.getByText('{"prompt":"What are we building?"}')).toBeInTheDocument()
   })
+
+  it('renders the empty steps state', () => {
+    mockUseWorkflow.mockReturnValue(
+      asResult({
+        isPending: false,
+        isError: false,
+        data: { ...workflow, steps: [] },
+      }),
+    )
+
+    render(<ViewWorkflow workflowId="11111111-1111-1111-1111-111111111111" />)
+
+    expect(screen.getByText('This workflow has no steps.')).toBeInTheDocument()
+  })
+
+  it('renders the empty actions state for a step', () => {
+    mockUseWorkflow.mockReturnValue(
+      asResult({
+        isPending: false,
+        isError: false,
+        data: {
+          ...workflow,
+          steps: [{ id: '2', key: 'interview', name: 'Interview', position: 10, actions: [] }],
+        },
+      }),
+    )
+
+    render(<ViewWorkflow workflowId="11111111-1111-1111-1111-111111111111" />)
+
+    expect(screen.getByText('No actions.')).toBeInTheDocument()
+  })
 })

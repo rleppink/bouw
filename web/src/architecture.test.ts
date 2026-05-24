@@ -28,20 +28,20 @@ describe('architecture', () => {
   it(
     'a slice never depends on another slice (THE invariant)',
     async () => {
-      const listOnCreate = projectFiles(TSCONFIG)
+      const listOnView = projectFiles(TSCONFIG)
         .inFolder('src/features/workflows/list-workflows/**')
         .shouldNot()
         .dependOnFiles()
-        .inFolder('src/features/workflows/create-workflow/**')
+        .inFolder('src/features/workflows/view-workflow/**')
 
-      const createOnList = projectFiles(TSCONFIG)
-        .inFolder('src/features/workflows/create-workflow/**')
+      const viewOnList = projectFiles(TSCONFIG)
+        .inFolder('src/features/workflows/view-workflow/**')
         .shouldNot()
         .dependOnFiles()
         .inFolder('src/features/workflows/list-workflows/**')
 
-      await expect(listOnCreate).toPassAsync()
-      await expect(createOnList).toPassAsync()
+      await expect(listOnView).toPassAsync()
+      await expect(viewOnList).toPassAsync()
     },
     ARCH_TIMEOUT,
   )

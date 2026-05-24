@@ -67,3 +67,29 @@ export const getWorkflow = async (
   const data: getWorkflowResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as getWorkflowResponse
 }
+
+export type getWorkflowsResponse200 = {
+  data: WorkflowResponse[]
+  status: 200
+}
+
+export type getWorkflowsResponseSuccess = getWorkflowsResponse200 & {
+  headers: Headers
+}
+export type getWorkflowsResponse = getWorkflowsResponseSuccess
+
+export const getGetWorkflowsUrl = () => {
+  return `/workflows`
+}
+
+export const getWorkflows = async (options?: RequestInit): Promise<getWorkflowsResponse> => {
+  const res = await fetch(getGetWorkflowsUrl(), {
+    ...options,
+    method: 'GET',
+  })
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+
+  const data: getWorkflowsResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getWorkflowsResponse
+}

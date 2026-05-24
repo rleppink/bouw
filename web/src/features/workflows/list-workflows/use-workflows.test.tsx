@@ -5,6 +5,7 @@ import type { Mock } from 'vitest'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { api } from '@/lib/api'
+import { getGetWorkflowsUrl } from '@/lib/api.generated'
 
 import { useWorkflows, workflowsQueryKey } from './use-workflows'
 
@@ -14,7 +15,12 @@ vi.mock('@/lib/api', () => ({
   },
 }))
 
+vi.mock('@/lib/api.generated', () => ({
+  getGetWorkflowsUrl: vi.fn(),
+}))
+
 const mockGet = api.get as unknown as Mock
+const mockGetWorkflowsUrl = getGetWorkflowsUrl as unknown as Mock
 
 function wrapper({ children }: { children: ReactNode }) {
   const queryClient = new QueryClient({
@@ -26,6 +32,7 @@ function wrapper({ children }: { children: ReactNode }) {
 
 beforeEach(() => {
   vi.clearAllMocks()
+  mockGetWorkflowsUrl.mockReturnValue('/workflows')
 })
 
 describe('useWorkflows', () => {
@@ -33,9 +40,10 @@ describe('useWorkflows', () => {
     const data = [
       {
         id: '1',
-        name: 'Foundation pour',
+        name: 'Frame',
+        description: 'Frame the feature before implementation.',
         status: 'active',
-        createdAt: '2026-01-02T00:00:00.000Z',
+        steps: [],
       },
     ]
     mockGet.mockReturnValue({ json: vi.fn().mockResolvedValue(data) })
@@ -55,5 +63,18 @@ describe('useWorkflows', () => {
     const { result } = renderHook(() => useWorkflows(), { wrapper })
 
     await waitFor(() => { expect(result.current.isError).toBe(true); })
+  })
+
+  it('keeps generated paths without a leading slash unchanged', async () => {
+    mockGetWorkflowsUrl.mockReturnValue('workflows')
+    mockGet.mockReturnValue({ json: vi.fn().mockResolvedValue([]) })
+
+    const { result } = renderHook(() => useWorkflows(), { wrapper })
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true)
+    })
+
+    expect(mockGet).toHaveBeenCalledWith('workflows')
   })
 })

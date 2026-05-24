@@ -8,11 +8,11 @@ describe('matchesSearch', () => {
   })
 
   it('matches case-insensitively on substring', () => {
-    expect(matchesSearch('Roof inspection', 'ROOF')).toBe(true)
+    expect(matchesSearch('Refactor safely', 'REFACTOR')).toBe(true)
   })
 
   it('rejects non-matching names', () => {
-    expect(matchesSearch('Roof inspection', 'foundation')).toBe(false)
+    expect(matchesSearch('Refactor safely', 'frame')).toBe(false)
   })
 })
 
@@ -22,8 +22,8 @@ describe('useWorkflowFilter', () => {
   })
 
   it('sets and clears the search term', () => {
-    useWorkflowFilter.getState().setSearch('roof')
-    expect(useWorkflowFilter.getState().search).toBe('roof')
+    useWorkflowFilter.getState().setSearch('refactor')
+    expect(useWorkflowFilter.getState().search).toBe('refactor')
 
     useWorkflowFilter.getState().clear()
     expect(useWorkflowFilter.getState().search).toBe('')

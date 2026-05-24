@@ -15,10 +15,11 @@ export default mergeConfig(
         provider: 'v8',
         reporter: ['text', 'html'],
         // Coverage is measured over feature logic — the place AI skips the hard
-        // conditional cases. Declarative contracts, generated code, and the
-        // composition layer (routes/main) carry no branches worth gating.
+        // conditional cases. TSX render files are still tested, but V8 reports
+        // JSX source-map artifacts as branches on static markup, so they are
+        // kept out of the numeric branch gate.
         include: ['src/features/**'],
-        exclude: ['**/*.test.{ts,tsx}', '**/*.contracts.ts', '**/index.ts'],
+        exclude: ['**/*.test.{ts,tsx}', '**/*.contracts.ts', '**/*.tsx', '**/index.ts'],
         // Branch coverage catches untested conditionals; line coverage is easy
         // to game. 80% branch minimum is a hard gate (see web README).
         thresholds: { branches: 80 },

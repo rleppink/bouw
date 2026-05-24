@@ -36,8 +36,20 @@ function asResult(
 }
 
 const sample: WorkflowSummary[] = [
-  { id: '1', name: 'Foundation pour', status: 'active', createdAt: '2026-01-02T00:00:00.000Z' },
-  { id: '2', name: 'Roof inspection', status: 'draft', createdAt: '2026-02-10T00:00:00.000Z' },
+  {
+    id: '1',
+    name: 'Frame',
+    description: 'Frame the feature before implementation.',
+    status: 'active',
+    steps: [{ id: 'step-1' }],
+  },
+  {
+    id: '2',
+    name: 'Refactor safely',
+    description: 'Preserve behavior while changing structure.',
+    status: 'archived',
+    steps: [],
+  },
 ]
 
 beforeEach(() => {
@@ -61,12 +73,18 @@ describe('ListWorkflows', () => {
   it('renders the workflows on success', () => {
     mockUseWorkflows.mockReturnValue(asResult({ isPending: false, isError: false, data: sample }))
     render(<ListWorkflows />)
-    expect(screen.getByText('Foundation pour')).toBeInTheDocument()
-    expect(screen.getByText('Roof inspection')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /foundation pour/i })).toHaveAttribute(
-      'href',
-      '/workflows/1',
-    )
+    expect(screen.getByText('Frame')).toBeInTheDocument()
+    expect(screen.getByText('Frame the feature before implementation.')).toBeInTheDocument()
+    expect(screen.getByText('active · 1 step')).toBeInTheDocument()
+    expect(screen.getByText('Refactor safely')).toBeInTheDocument()
+    expect(screen.getByText('archived · 0 steps')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /frame/i })).toHaveAttribute('href', '/workflows/1')
+  })
+
+  it('shows an empty message when there are no workflows', () => {
+    mockUseWorkflows.mockReturnValue(asResult({ isPending: false, isError: false, data: [] }))
+    render(<ListWorkflows />)
+    expect(screen.getByText(/no workflows match/i)).toBeInTheDocument()
   })
 
   it('shows an empty message when the filter matches nothing', async () => {
@@ -79,8 +97,8 @@ describe('ListWorkflows', () => {
   it('filters down to matching workflows', async () => {
     mockUseWorkflows.mockReturnValue(asResult({ isPending: false, isError: false, data: sample }))
     render(<ListWorkflows />)
-    await userEvent.type(screen.getByLabelText('Filter workflows'), 'roof')
-    expect(screen.getByText('Roof inspection')).toBeInTheDocument()
-    expect(screen.queryByText('Foundation pour')).not.toBeInTheDocument()
+    await userEvent.type(screen.getByLabelText('Filter workflows'), 'refactor')
+    expect(screen.getByText('Refactor safely')).toBeInTheDocument()
+    expect(screen.queryByText('Frame')).not.toBeInTheDocument()
   })
 })

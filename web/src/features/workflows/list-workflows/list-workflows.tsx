@@ -3,7 +3,6 @@ import { Link } from '@tanstack/react-router'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 
-import { formatWorkflowDate } from './format-workflow-date'
 import { useWorkflows } from './use-workflows'
 import { matchesSearch, useWorkflowFilter } from './workflow-filter.store'
 
@@ -44,9 +43,11 @@ export function ListWorkflows() {
                 <Card className="hover:bg-muted/50 transition-colors">
                   <CardHeader>
                     <CardTitle>{workflow.name}</CardTitle>
+                    <p className="text-muted-foreground text-sm">{workflow.description}</p>
                   </CardHeader>
                   <CardContent className="text-muted-foreground text-sm">
-                    {workflow.status} · created {formatWorkflowDate(workflow.createdAt)}
+                    {workflow.status} · {workflow.steps.length}{' '}
+                    {workflow.steps.length === 1 ? 'step' : 'steps'}
                   </CardContent>
                 </Card>
               </Link>
