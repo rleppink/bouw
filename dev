@@ -1,0 +1,100 @@
+#!/usr/bin/env sh
+set -eu
+
+usage() {
+  cat <<'USAGE'
+Usage: ./dev <command> [args...]
+
+Commands:
+  up            Start this worktree's Docker dev stack and print the app URL.
+  url           Print this worktree's current app URL.
+  down          Stop and remove this worktree's stack, including volumes.
+  ps            Show this worktree's Compose services.
+  logs [args]   Show logs for this worktree's Compose services.
+  compose ...   Run docker compose for this worktree's project.
+USAGE
+}
+
+repo_root() {
+  git rev-parse --show-toplevel 2>/dev/null || pwd -P
+}
+
+slugify() {
+  printf '%s' "$1" \
+    | tr '[:upper:]' '[:lower:]' \
+    | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//'
+}
+
+project_name() {
+  root="$(repo_root)"
+  branch="$(git -C "$root" branch --show-current 2>/dev/null || true)"
+
+  if [ -z "$branch" ]; then
+    branch="$(basename "$root")"
+  fi
+
+  slug="$(slugify "$branch")"
+  if [ -z "$slug" ]; then
+    slug="worktree"
+  fi
+
+  path_hash="$(cd "$root" && pwd -P | shasum | cut -c1-6)"
+  printf 'bouw-%s-%s' "$slug" "$path_hash"
+}
+
+compose() {
+  root="$(repo_root)"
+  project="$(project_name)"
+  printf 'Compose project: %s\n' "$project"
+  docker compose -f "$root/compose.yaml" -p "$project" "$@"
+}
+
+app_url() {
+  project="$(project_name)"
+  root="$(repo_root)"
+  port_output="$(docker compose -f "$root/compose.yaml" -p "$project" port web 5173)"
+
+  if [ -z "$port_output" ]; then
+    printf 'No web port is published yet. Start the stack with ./dev up.\n' >&2
+    exit 1
+  fi
+
+  host_port="$(printf '%s' "$port_output" | awk -F: 'END { print $NF }')"
+  printf 'http://localhost:%s\n' "$host_port"
+}
+
+command="${1:-}"
+if [ -n "$command" ]; then
+  shift
+fi
+
+case "$command" in
+  up)
+    compose up -d "$@"
+    printf 'App URL: %s\n' "$(app_url)"
+    ;;
+  url)
+    printf 'Compose project: %s\n' "$(project_name)"
+    printf 'App URL: %s\n' "$(app_url)"
+    ;;
+  down)
+    compose down --volumes --rmi local --remove-orphans "$@"
+    ;;
+  ps)
+    compose ps "$@"
+    ;;
+  logs)
+    compose logs "$@"
+    ;;
+  compose)
+    compose "$@"
+    ;;
+  ""|-h|--help|help)
+    usage
+    ;;
+  *)
+    printf 'Unknown command: %s\n\n' "$command" >&2
+    usage >&2
+    exit 2
+    ;;
+esac
