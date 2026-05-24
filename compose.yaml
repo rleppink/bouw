@@ -25,6 +25,12 @@ services:
       DOTNET_USE_POLLING_FILE_WATCHER: "1"
     working_dir: /workspace
     command: dotnet run --project api/Bouw.API.csproj --no-launch-profile
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://localhost:8080/openapi/v1.json > /dev/null"]
+      interval: 2s
+      timeout: 5s
+      retries: 60
+      start_period: 5s
     volumes:
       - .:/workspace
       - api_nuget:/root/.nuget/packages
@@ -32,12 +38,23 @@ services:
   web:
     image: node:22-bookworm-slim
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     environment:
       API_PROXY_TARGET: http://api:8080
       VITE_API_URL: /api/
     working_dir: /app
     command: sh -c "npm ci && npm run dev -- --host 0.0.0.0"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"require('node:http').get('http://localhost:5173/', response => process.exit(response.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))\"",
+        ]
+      interval: 2s
+      timeout: 5s
+      retries: 60
+      start_period: 5s
     ports:
       - "127.0.0.1::5173"
     volumes:
