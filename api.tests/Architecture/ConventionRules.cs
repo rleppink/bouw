@@ -1,4 +1,6 @@
 using ArchUnitNET.xUnit;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static ArchUnitNET.Fluent.ArchRuleDefinition;
 
 namespace Bouw.API.Tests.Architecture;
@@ -131,6 +133,67 @@ public sealed class ConventionRules
             .Check(ArchitectureFixture.Architecture);
     }
 
+    /// <summary>
+    /// Contract-shaped slice wire types live in the concentrated per-slice
+    /// Contracts.cs file. Helpers may live beside the handler, but should not
+    /// use request/response names.
+    /// </summary>
+    [Fact]
+    public void SliceContractsAreDeclaredOnlyInContractsFiles()
+    {
+        var failures = new List<string>();
+
+        foreach (var typeDeclaration in GetFeatureTypeDeclarations())
+        {
+            if (!IsContractTypeName(typeDeclaration.Type.Identifier.ValueText))
+            {
+                continue;
+            }
+
+            if (IsContractsFile(typeDeclaration.FilePath))
+            {
+                continue;
+            }
+
+            failures.Add(
+                $"{typeDeclaration.Type.Identifier.ValueText} must be declared in Contracts.cs: {typeDeclaration.FilePath}"
+            );
+        }
+
+        AssertNoConventionFailures(failures);
+    }
+
+    /// <summary>
+    /// Contracts.cs is only for slice request/response records. Behaviour and
+    /// helpers stay in their own files.
+    /// </summary>
+    [Fact]
+    public void ContractsFilesContainOnlyContractRecords()
+    {
+        var failures = new List<string>();
+
+        foreach (var typeDeclaration in GetFeatureTypeDeclarations())
+        {
+            if (!IsContractsFile(typeDeclaration.FilePath))
+            {
+                continue;
+            }
+
+            var typeName = typeDeclaration.Type.Identifier.ValueText;
+
+            if (typeDeclaration.Type is RecordDeclarationSyntax && IsContractTypeName(typeName))
+            {
+                continue;
+            }
+
+            failures.Add(
+                $"{typeName} in Contracts.cs must be a request/response record: {typeDeclaration.FilePath}"
+            );
+        }
+
+        AssertNoConventionFailures(failures);
+    }
+
     private static string FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
@@ -147,4 +210,53 @@ public sealed class ConventionRules
 
         throw new DirectoryNotFoundException("Could not find repository root.");
     }
+
+    private static IEnumerable<FeatureTypeDeclaration> GetFeatureTypeDeclarations()
+    {
+        var featuresDirectory = Path.Combine(FindRepositoryRoot(), "api", "Features");
+
+        if (!Directory.Exists(featuresDirectory))
+        {
+            yield break;
+        }
+
+        foreach (
+            var sourceFile in Directory.GetFiles(
+                featuresDirectory,
+                "*.cs",
+                SearchOption.AllDirectories
+            )
+        )
+        {
+            var syntaxTree = CSharpSyntaxTree.ParseText(
+                File.ReadAllText(sourceFile),
+                path: sourceFile
+            );
+            var root = syntaxTree.GetCompilationUnitRoot();
+
+            foreach (var typeDeclaration in root.Members.OfType<TypeDeclarationSyntax>())
+            {
+                yield return new FeatureTypeDeclaration(sourceFile, typeDeclaration);
+            }
+        }
+    }
+
+    private static bool IsContractsFile(string filePath) =>
+        string.Equals(Path.GetFileName(filePath), "Contracts.cs", StringComparison.Ordinal);
+
+    private static bool IsContractTypeName(string typeName) =>
+        typeName.EndsWith("Request", StringComparison.Ordinal)
+        || typeName.EndsWith("Response", StringComparison.Ordinal);
+
+    private static void AssertNoConventionFailures(List<string> failures)
+    {
+        if (failures.Count == 0)
+        {
+            return;
+        }
+
+        Assert.Fail(string.Join(Environment.NewLine, failures));
+    }
+
+    private sealed record FeatureTypeDeclaration(string FilePath, TypeDeclarationSyntax Type);
 }

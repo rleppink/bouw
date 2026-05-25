@@ -126,7 +126,9 @@ ArchUnitNET rules in the test project:
 - no slice references another slice (the core invariant);
 - dependencies point one way: `Features` → `Persistence` / `Infrastructure`, never
   back;
-- endpoints and feature service registration classes live under `Features`.
+- endpoints and feature service registration classes live under `Features`;
+- slice request/response records live in that slice's `Contracts.cs`, and
+  `Contracts.cs` contains only request/response records.
 
 New slices expose explicit registration and mapping extension methods from inside
 the slice, for example `AddGetWorkflow()` and `MapGetWorkflow()`. `Program.cs`
