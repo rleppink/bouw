@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep -E \"\\\\.\\(sln|props|targets|ruleset|config\\)$\")"
+      "Bash(grep -E \"\\\\.\\(sln|props|targets|ruleset|config\\)$\")",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(npm --prefix web ci)"
     ]
   }
 }
