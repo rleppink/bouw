@@ -234,7 +234,7 @@ public sealed class ConventionRules
             );
             var root = syntaxTree.GetCompilationUnitRoot();
 
-            foreach (var typeDeclaration in root.Members.OfType<TypeDeclarationSyntax>())
+            foreach (var typeDeclaration in root.DescendantNodes().OfType<TypeDeclarationSyntax>())
             {
                 yield return new FeatureTypeDeclaration(sourceFile, typeDeclaration);
             }
