@@ -50,15 +50,50 @@ public sealed class ConventionRules
             .Check(ArchitectureFixture.Architecture);
     }
 
-    /// <summary>#7 — handlers include the slice name in their type name.</summary>
+    /// <summary>#7 — handlers use the conventional per-slice type and file name.</summary>
     [Fact]
-    public void HandlersUseSliceName()
+    public void HandlersAreNamedHandler()
     {
         foreach (var handler in ArchitectureFixture.FeatureHandlerTypes)
         {
-            var sliceName = handler.Namespace!.Split('.').Last();
+            Assert.Equal("Handler", handler.Name);
+        }
+    }
 
-            Assert.Equal($"{sliceName}Handler", handler.Name);
+    [Fact]
+    public void HandlerFilesAreNamedHandler()
+    {
+        var featuresDirectory = Path.Combine(FindRepositoryRoot(), "api", "Features");
+
+        if (!Directory.Exists(featuresDirectory))
+        {
+            return;
+        }
+
+        var handlerFiles = Directory.GetFiles(
+            featuresDirectory,
+            "*Handler.cs",
+            SearchOption.AllDirectories
+        );
+
+        foreach (var handlerFile in handlerFiles)
+        {
+            Assert.Equal("Handler.cs", Path.GetFileName(handlerFile));
+        }
+
+        var sliceDirectories = Directory
+            .GetDirectories(featuresDirectory, "*", SearchOption.AllDirectories)
+            .Where(directory =>
+                File.Exists(Path.Combine(directory, "Endpoint.cs"))
+                || File.Exists(Path.Combine(directory, "FeatureServices.cs"))
+            );
+
+        foreach (var sliceDirectory in sliceDirectories)
+        {
+            Assert.True(
+                File.Exists(Path.Combine(sliceDirectory, "Handler.cs")),
+                $"Slice directory must contain Handler.cs: {sliceDirectory}"
+            );
         }
     }
 
@@ -94,5 +129,22 @@ public sealed class ConventionRules
             )
             .WithoutRequiringPositiveResults()
             .Check(ArchitectureFixture.Architecture);
+    }
+
+    private static string FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+
+        while (directory is not null)
+        {
+            if (Directory.Exists(Path.Combine(directory.FullName, "api", "Features")))
+            {
+                return directory.FullName;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Could not find repository root.");
     }
 }

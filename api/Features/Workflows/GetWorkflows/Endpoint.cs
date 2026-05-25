@@ -11,7 +11,7 @@ public static class Endpoint
         app.MapGet(
                 "/workflows",
                 async Task<Ok<IReadOnlyCollection<WorkflowResponse>>> (
-                    GetWorkflowsHandler handler,
+                    Handler handler,
                     CancellationToken cancellationToken
                 ) =>
                 {

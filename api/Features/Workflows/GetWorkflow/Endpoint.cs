@@ -12,7 +12,7 @@ public static class Endpoint
                 "/workflows/{id:guid}",
                 async Task<Results<Ok<WorkflowResponse>, NotFound>> (
                     Guid id,
-                    GetWorkflowHandler handler,
+                    Handler handler,
                     CancellationToken cancellationToken
                 ) =>
                 {

@@ -8,6 +8,6 @@ public static class FeatureServices
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddScoped<GetWorkflowHandler>();
+        services.AddScoped<Handler>();
     }
 }

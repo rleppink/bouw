@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Bouw.API.Features.Workflows.GetWorkflows;
 
-public sealed class GetWorkflowsHandler
+public sealed class Handler
 {
     private readonly BouwDbContext db;
 
-    public GetWorkflowsHandler(BouwDbContext db)
+    public Handler(BouwDbContext db)
     {
         ArgumentNullException.ThrowIfNull(db);
 

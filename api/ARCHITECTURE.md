@@ -22,7 +22,7 @@ api/                                  (root namespace Bouw.API)
 │   └── Workflows/                    // topical grouping only — NOT a boundary
 │       ├── CreateWorkflow/           // a SLICE = one operation
 │       │   ├── Endpoint.cs           // route + filters (HTTP only)
-│       │   ├── CreateWorkflowHandler.cs // the business logic for this op
+│       │   ├── Handler.cs            // the business logic for this op
 │       │   ├── FeatureServices.cs    // DI registration for this slice
 │       │   └── *Request/*Response.cs // request/response records
 │       └── EditWorkflow/
@@ -49,10 +49,10 @@ Three concerns are the usual shape:
 
 - **`Endpoint.cs`** — maps one route (under a `MapGroup` prefix) and attaches
   filters. HTTP plumbing only; no logic.
-- **`<SliceName>Handler.cs`** — a `sealed` class, DI-injected with `BouwDbContext`
+- **`Handler.cs`** — a `sealed` `Handler` class, DI-injected with `BouwDbContext`
   and whatever else it needs. **This is where business logic lives.** Thin for
   CRUD is fine; the value is that there is *exactly one* obvious place per
-  operation without 30 classes all named `Handler`.
+  operation.
 - **`FeatureServices.cs`** — exposes an `IServiceCollection` extension method for
   the slice's DI registrations.
 - **`*Request.cs` / `*Response.cs`** — request/response `record`s. Distinct from
@@ -80,7 +80,7 @@ it — no mediator library.
 
 ```csharp
 app.MapPost("/workflows",
-    async (CreateWorkflowRequest req, CreateWorkflowHandler handler, CancellationToken ct)
+    async (CreateWorkflowRequest req, Handler handler, CancellationToken ct)
         => await handler.HandleAsync(req, ct));
 ```
 
@@ -96,7 +96,7 @@ entities: inside a single bounded context the data model is common ground.
 - **Writes** go through the relevant entity and `SaveChangesAsync()`. Domain rules
   that must always hold can live as methods on the entity
   (`Workflow.AddStage()` rejecting duplicates); use-case orchestration stays in the
-  `<SliceName>Handler`.
+  slice `Handler`.
 - **Cross-topic queries are fine** — a slice grouped under `Workflows/` may read
   `User` data straight from the context. There is no wall to cross.
 
@@ -133,7 +133,7 @@ slice intentionally edits `Program.cs`.
 ## Deliberately not used
 
 - **MediatR / a mediator** — direct DI removes the need (and the licence).
-- **Per-slice Service / Logic layers** — collapsed into `<SliceName>Handler`.
+- **Per-slice Service / Logic layers** — collapsed into `Handler`.
 - **Per-feature data ownership / bounded-context isolation** — we considered the
   modular-monolith path (private entities, published read contracts, ports,
   integration events — i.e. the DDD context-mapping patterns) and chose against

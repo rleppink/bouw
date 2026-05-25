@@ -24,7 +24,7 @@ type/class rule. The effect:
 
 - **When a rule has no matching types:** it passes vacuously — it is a dormant
   guardrail.
-- **As slices land:** the moment a `<SliceName>Handler` (or slice) appears,
+- **As slices land:** the moment a `Handler` (or slice) appears,
   the rule binds to it and **fails closed** on any violation.
 
 The one trade-off to know: a rule whose predicate matches *nothing* will pass
@@ -74,8 +74,8 @@ Legend — **✅ implemented** · **🟡 optional / later** · **❌ not via Arc
 |---|--------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 4 | **Endpoint mapping classes reside under `Features.*`** | Static stand-in for #3's placement intent. `Classes().That().HaveName("Endpoint").Should().ResideInNamespaceMatching(...)`.                                                                               |
 | 5 | **Feature service registrations reside under `Features.*`** | Keeps slice-owned DI hooks in slices. `Classes().That().HaveName("FeatureServices").Should().ResideInNamespaceMatching(...)`.                                                                              |
-| 6 | **Handlers are `sealed`**                              | Doc: "`<SliceName>Handler.cs` — a `sealed` class". `Classes().That().HaveNameEndingWith("Handler").Should().BeSealed()`.                                                                                  |
-| 7 | **Handlers use the slice name**                        | Avoids dozens of ambiguous `Handler` types in DI, stack traces, logs, and search results. Reflection assertion: namespace leaf `GetWorkflow` requires type name `GetWorkflowHandler`.                    |
+| 6 | **Handlers are `sealed`**                              | Doc: "`Handler.cs` — a `sealed` `Handler` class". `Classes().That().HaveNameEndingWith("Handler").Should().BeSealed()`.                                                                                   |
+| 7 | **Handlers use the per-slice name**                    | Reflection assertion requires the feature handler type name to be exactly `Handler`; a filesystem assertion requires slice-owned handler files to be named `Handler.cs`.                                  |
 | 8 | **Handlers reside under `Features.*`**                 | Keeps business logic inside slices.                                                                                                                                                                       |
 
 ### Worth considering — 🟡 (expressible & useful, optional / tune later)
@@ -128,8 +128,8 @@ greenfield repo proves little on its own. The rules were checked to *fail* on a
 real violation by temporarily adding two throwaway slices under a shared grouping
 folder:
 
-- `Features/Workflows/CreateWorkflow/CreateWorkflowHandler.cs` (sealed)
-- `Features/Workflows/EditWorkflow/EditWorkflowHandler.cs` — **unsealed** and
+- `Features/Workflows/CreateWorkflow/Handler.cs` (sealed)
+- `Features/Workflows/EditWorkflow/Handler.cs` — **unsealed** and
   referencing the sibling slice's handler.
 
 Result, as expected:
