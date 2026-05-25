@@ -24,7 +24,7 @@ api/                                  (root namespace Bouw.API)
 │       │   ├── Endpoint.cs           // route + filters (HTTP only)
 │       │   ├── Handler.cs            // the business logic for this op
 │       │   ├── FeatureServices.cs    // DI registration for this slice
-│       │   └── *Request/*Response.cs // request/response records
+│       │   └── Contracts.cs          // request/response records
 │       └── EditWorkflow/
 │           └── …
 ├── Persistence/                      // the shared data model — used by every slice
@@ -55,8 +55,11 @@ Three concerns are the usual shape:
   operation.
 - **`FeatureServices.cs`** — exposes an `IServiceCollection` extension method for
   the slice's DI registrations.
-- **`*Request.cs` / `*Response.cs`** — request/response `record`s. Distinct from
-  entities so the wire shape and the stored shape can diverge.
+- **`Contracts.cs`** — slice-local request/response `record`s. Distinct from
+  entities so the wire shape and the stored shape can diverge. This is the narrow
+  exception to one type per file: contract records that belong only to this slice
+  may share this file; behavior, helpers, endpoints, handlers, and registrations
+  stay in their own files.
 
 There is **no separate Service or Logic layer** inside a slice — that would
 re-introduce the horizontal layering VSA exists to remove.

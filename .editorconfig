@@ -71,6 +71,10 @@ dotnet_naming_style.pascal_case.capitalization = pascal_case
 # ASP.NET Core uses an auto-generated `public` Program class for testability
 dotnet_diagnostic.CA1515.severity = none  # consider making public types internal
 
+# Slice-local API contract records intentionally share one file.
+[api/Features/**/Contracts.cs]
+dotnet_diagnostic.MA0048.severity = none  # file name must match type name
+
 # =============================================================================
 # Repo-local analyzer project
 # =============================================================================

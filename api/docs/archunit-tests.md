@@ -85,7 +85,7 @@ Legend — **✅ implemented** · **🟡 optional / later** · **❌ not via Arc
 | 9  | Handlers must not depend on ASP.NET HTTP/MVC plumbing                          | ✅ shipped, **tune the banned set** | Enforces "Endpoint = HTTP, Handler = logic". Currently bans `Microsoft.AspNetCore.Mvc` and `Microsoft.AspNetCore.Http`. Revisit if a handler legitimately needs e.g. `IResult`. |
 | 10 | Entities in `Persistence.Entities`, EF configs in `Persistence.Configurations` | follow-up                           | Light placement guard; premature until Persistence exists, harmless when empty.                                                                                                 |
 | 11 | Whole-API namespace cycle freedom                                              | ✅ shipped                          | `Slices().Matching("Bouw.API.(**)").Should().BeFreeOfCycles()` — complements #1/#2 at the layer level.                                                                          |
-| 12 | Contracts named `*Request`/`*Response` reside in their slice                   | follow-up                           | Naming/placement is trivial to assert; low urgency.                                                                                                                             |
+| 12 | Slice contracts live in `Contracts.cs` and remain in their slice               | follow-up                           | Placement is easy to assert if this convention starts drifting; low urgency while the folder shape is small.                                                                      |
 
 ### Would not — ❌ (skip, with reason)
 
@@ -94,6 +94,7 @@ Legend — **✅ implemented** · **🟡 optional / later** · **❌ not via Arc
 | Endpoint *runtime reachability* (#3)                            | Runtime endpoint data, not a static dep. Do it as a `WebApplicationFactory<Program>` integration test.                  |
 | Ban MediatR / FluentValidation ("deliberately not used")        | Expressible, but better covered by *not referencing the package* + `BannedApiAnalyzers` (applied repo-wide). Redundant. |
 | Contracts must be `record`s                                     | ArchUnitNET has no clean "is record" predicate; checking synthesized members is brittle, low value.                     |
+| One type per file for slice contracts                           | Intentionally skipped. Slice-local request/response records may share `Contracts.cs`; keep one type per file for behavior-bearing code. |
 | "Prefer duplication over the wrong abstraction" / rule-of-three | A human judgment call — not statically decidable.                                                                       |
 | Slice-private helpers must be `internal`/`file`-scoped          | Accessibility is checkable, but the *intent* is fuzzy; not worth a brittle rule.                                        |
 | File-length limits                                              | Already enforced by the `FileLineLimit` (LINE0001) analyzer, repo-wide.                                                 |
