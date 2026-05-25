@@ -70,7 +70,9 @@ fi
 
 case "$command" in
   up)
-    compose up -d --wait "$@"
+    compose up -d postgres
+    compose up -d --force-recreate api-prep web-prep
+    compose up -d --wait api web "$@"
     printf 'App URL: %s\n' "$(app_url)"
     ;;
   url)
