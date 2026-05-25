@@ -13,6 +13,10 @@ function Home() {
         <Link to="/workflows" className="text-foreground underline">
           View workflows →
         </Link>
+        {' or '}
+        <Link to="/board" className="text-foreground underline">
+          open the board →
+        </Link>
       </p>
     </div>
   )
