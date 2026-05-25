@@ -1,6 +1,7 @@
 using System.Reflection;
 using Bouw.API.Features.Workflows.GetWorkflow;
 using Bouw.API.Features.Workflows.GetWorkflows;
+using Bouw.API.Infrastructure.Llm;
 using Bouw.API.Persistence;
 using Bouw.API.Persistence.Seeding;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,7 @@ var connectionString = isOpenApiGeneration switch
 
 builder.Services.AddGetWorkflow();
 builder.Services.AddGetWorkflows();
+builder.Services.AddLlmInfrastructure();
 
 builder.Services.AddDbContext<BouwDbContext>(options =>
     options.UseNpgsql(connectionString).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
