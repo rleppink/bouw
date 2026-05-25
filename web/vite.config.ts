@@ -30,6 +30,12 @@ export function createViteConfig(mode: string): UserConfig {
       },
     },
     server: {
+      // In Docker on macOS the bind mount doesn't forward fs events, so the
+      // HMR watcher only sees changes when it polls. CHOKIDAR_USEPOLLING is
+      // set by the compose `web` service.
+      watch: {
+        usePolling: env.CHOKIDAR_USEPOLLING === 'true',
+      },
       proxy: {
         '/api': {
           target: apiProxyTarget,
