@@ -20,6 +20,9 @@ internal static class WorkflowValueConverters
     public static ValueConverter<ActionRunStatus, string> ActionRunStatus { get; } =
         new(status => ToDatabase(status), value => ToActionRunStatus(value));
 
+    public static ValueConverter<TicketStatus, string> TicketStatus { get; } =
+        new(status => ToDatabase(status), value => ToTicketStatus(value));
+
     private static string ToDatabase(WorkflowStatus status) =>
         status switch
         {
@@ -123,6 +126,22 @@ internal static class WorkflowValueConverters
             "waiting_for_user" => Entities.ActionRunStatus.WaitingForUser,
             "complete" => Entities.ActionRunStatus.Complete,
             "failed" => Entities.ActionRunStatus.Failed,
+            _ => throw new ArgumentOutOfRangeException(nameof(value), value, message: null),
+        };
+
+    private static string ToDatabase(TicketStatus status) =>
+        status switch
+        {
+            Entities.TicketStatus.Pending => "pending",
+            Entities.TicketStatus.Completed => "completed",
+            _ => throw new ArgumentOutOfRangeException(nameof(status), status, message: null),
+        };
+
+    private static TicketStatus ToTicketStatus(string value) =>
+        value switch
+        {
+            "pending" => Entities.TicketStatus.Pending,
+            "completed" => Entities.TicketStatus.Completed,
             _ => throw new ArgumentOutOfRangeException(nameof(value), value, message: null),
         };
 }

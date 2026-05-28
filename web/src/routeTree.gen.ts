@@ -10,13 +10,21 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WorkflowsRouteImport } from './routes/workflows'
+import { Route as TicketsRouteImport } from './routes/tickets'
 import { Route as BoardRouteImport } from './routes/board'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorkflowsIdRouteImport } from './routes/workflows_.$id'
+import { Route as TicketsNewRouteImport } from './routes/tickets_.new'
+import { Route as TicketsIdRouteImport } from './routes/tickets_.$id'
 
 const WorkflowsRoute = WorkflowsRouteImport.update({
   id: '/workflows',
   path: '/workflows',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TicketsRoute = TicketsRouteImport.update({
+  id: '/tickets',
+  path: '/tickets',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BoardRoute = BoardRouteImport.update({
@@ -34,38 +42,82 @@ const WorkflowsIdRoute = WorkflowsIdRouteImport.update({
   path: '/workflows/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TicketsNewRoute = TicketsNewRouteImport.update({
+  id: '/tickets_/new',
+  path: '/tickets/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TicketsIdRoute = TicketsIdRouteImport.update({
+  id: '/tickets_/$id',
+  path: '/tickets/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/board': typeof BoardRoute
+  '/tickets': typeof TicketsRoute
   '/workflows': typeof WorkflowsRoute
+  '/tickets/$id': typeof TicketsIdRoute
+  '/tickets/new': typeof TicketsNewRoute
   '/workflows/$id': typeof WorkflowsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/board': typeof BoardRoute
+  '/tickets': typeof TicketsRoute
   '/workflows': typeof WorkflowsRoute
+  '/tickets/$id': typeof TicketsIdRoute
+  '/tickets/new': typeof TicketsNewRoute
   '/workflows/$id': typeof WorkflowsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/board': typeof BoardRoute
+  '/tickets': typeof TicketsRoute
   '/workflows': typeof WorkflowsRoute
+  '/tickets_/$id': typeof TicketsIdRoute
+  '/tickets_/new': typeof TicketsNewRoute
   '/workflows_/$id': typeof WorkflowsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/board' | '/workflows' | '/workflows/$id'
+  fullPaths:
+    | '/'
+    | '/board'
+    | '/tickets'
+    | '/workflows'
+    | '/tickets/$id'
+    | '/tickets/new'
+    | '/workflows/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/board' | '/workflows' | '/workflows/$id'
-  id: '__root__' | '/' | '/board' | '/workflows' | '/workflows_/$id'
+  to:
+    | '/'
+    | '/board'
+    | '/tickets'
+    | '/workflows'
+    | '/tickets/$id'
+    | '/tickets/new'
+    | '/workflows/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/board'
+    | '/tickets'
+    | '/workflows'
+    | '/tickets_/$id'
+    | '/tickets_/new'
+    | '/workflows_/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BoardRoute: typeof BoardRoute
+  TicketsRoute: typeof TicketsRoute
   WorkflowsRoute: typeof WorkflowsRoute
+  TicketsIdRoute: typeof TicketsIdRoute
+  TicketsNewRoute: typeof TicketsNewRoute
   WorkflowsIdRoute: typeof WorkflowsIdRoute
 }
 
@@ -76,6 +128,13 @@ declare module '@tanstack/react-router' {
       path: '/workflows'
       fullPath: '/workflows'
       preLoaderRoute: typeof WorkflowsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tickets': {
+      id: '/tickets'
+      path: '/tickets'
+      fullPath: '/tickets'
+      preLoaderRoute: typeof TicketsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/board': {
@@ -99,13 +158,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkflowsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tickets_/new': {
+      id: '/tickets_/new'
+      path: '/tickets/new'
+      fullPath: '/tickets/new'
+      preLoaderRoute: typeof TicketsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tickets_/$id': {
+      id: '/tickets_/$id'
+      path: '/tickets/$id'
+      fullPath: '/tickets/$id'
+      preLoaderRoute: typeof TicketsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BoardRoute: BoardRoute,
+  TicketsRoute: TicketsRoute,
   WorkflowsRoute: WorkflowsRoute,
+  TicketsIdRoute: TicketsIdRoute,
+  TicketsNewRoute: TicketsNewRoute,
   WorkflowsIdRoute: WorkflowsIdRoute,
 }
 export const routeTree = rootRouteImport

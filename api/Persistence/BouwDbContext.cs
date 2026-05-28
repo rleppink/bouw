@@ -12,6 +12,7 @@ public sealed class BouwDbContext(DbContextOptions<BouwDbContext> options) : DbC
     public DbSet<SessionStep> SessionSteps => this.Set<SessionStep>();
     public DbSet<ActionRun> ActionRuns => this.Set<ActionRun>();
     public DbSet<Document> Documents => this.Set<Document>();
+    public DbSet<Ticket> Tickets => this.Set<Ticket>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

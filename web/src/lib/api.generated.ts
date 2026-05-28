@@ -4,6 +4,21 @@
  * Bouw.API | v1
  * OpenAPI spec version: 1.0.0
  */
+export interface CreateTicketRequest {
+  /** @nullable */
+  userInput: string | null
+}
+
+export interface TicketResponse {
+  id: string
+  title: string
+  userInput: string
+  status: string
+  llmResponse: string
+  createdAt: string
+  updatedAt: string
+}
+
 export interface WorkflowActionResponse {
   id: string
   key: string
@@ -92,4 +107,105 @@ export const getWorkflows = async (options?: RequestInit): Promise<getWorkflowsR
 
   const data: getWorkflowsResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as getWorkflowsResponse
+}
+
+export type createTicketResponse201 = {
+  data: TicketResponse
+  status: 201
+}
+
+export type createTicketResponse400 = {
+  data: void
+  status: 400
+}
+
+export type createTicketResponseSuccess = createTicketResponse201 & {
+  headers: Headers
+}
+export type createTicketResponseError = createTicketResponse400 & {
+  headers: Headers
+}
+
+export type createTicketResponse = createTicketResponseSuccess | createTicketResponseError
+
+export const getCreateTicketUrl = () => {
+  return `/tickets`
+}
+
+export const createTicket = async (
+  createTicketRequest: CreateTicketRequest,
+  options?: RequestInit,
+): Promise<createTicketResponse> => {
+  const res = await fetch(getCreateTicketUrl(), {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createTicketRequest),
+  })
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+
+  const data: createTicketResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as createTicketResponse
+}
+
+export type getTicketsResponse200 = {
+  data: TicketResponse[]
+  status: 200
+}
+
+export type getTicketsResponseSuccess = getTicketsResponse200 & {
+  headers: Headers
+}
+export type getTicketsResponse = getTicketsResponseSuccess
+
+export const getGetTicketsUrl = () => {
+  return `/tickets`
+}
+
+export const getTickets = async (options?: RequestInit): Promise<getTicketsResponse> => {
+  const res = await fetch(getGetTicketsUrl(), {
+    ...options,
+    method: 'GET',
+  })
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+
+  const data: getTicketsResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getTicketsResponse
+}
+
+export type getTicketResponse200 = {
+  data: TicketResponse
+  status: 200
+}
+
+export type getTicketResponse404 = {
+  data: void
+  status: 404
+}
+
+export type getTicketResponseSuccess = getTicketResponse200 & {
+  headers: Headers
+}
+export type getTicketResponseError = getTicketResponse404 & {
+  headers: Headers
+}
+
+export type getTicketResponse = getTicketResponseSuccess | getTicketResponseError
+
+export const getGetTicketUrl = (id: string) => {
+  return `/tickets/${id}`
+}
+
+export const getTicket = async (id: string, options?: RequestInit): Promise<getTicketResponse> => {
+  const res = await fetch(getGetTicketUrl(id), {
+    ...options,
+    method: 'GET',
+  })
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+
+  const data: getTicketResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getTicketResponse
 }

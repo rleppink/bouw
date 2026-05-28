@@ -4,7 +4,13 @@
       "Bash(grep -E \"\\\\.\\(sln|props|targets|ruleset|config\\)$\")",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(npm --prefix web ci)"
+      "Bash(npm --prefix web ci)",
+      "Bash(dotnet build *)",
+      "Bash(dotnet test *)",
+      "Bash(dotnet csharpier *)",
+      "Bash(./api/dotnet-check)",
+      "Bash(git commit *)",
+      "Bash(npm run *)"
     ]
   }
 }

@@ -12,6 +12,9 @@ function RootLayout() {
           bouw
         </Link>
         <nav className="text-muted-foreground flex gap-3 text-sm">
+          <Link to="/tickets" className="[&.active]:text-foreground [&.active]:underline">
+            Tickets
+          </Link>
           <Link to="/workflows" className="[&.active]:text-foreground [&.active]:underline">
             Workflows
           </Link>

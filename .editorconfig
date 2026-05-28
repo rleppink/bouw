@@ -75,6 +75,13 @@ dotnet_diagnostic.CA1515.severity = none  # consider making public types interna
 [api/Features/**/Contracts.cs]
 dotnet_diagnostic.MA0048.severity = none  # file name must match type name
 
+# EF migrations are generated timestamped partial classes, so their file names,
+# namespace shape, and method signatures are owned by EF tooling.
+[api/Persistence/Migrations/*.cs]
+dotnet_diagnostic.CA1062.severity = none
+dotnet_diagnostic.IDE0161.severity = none
+dotnet_diagnostic.MA0048.severity = none
+
 # =============================================================================
 # Repo-local analyzer project
 # =============================================================================
